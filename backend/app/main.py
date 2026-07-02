@@ -1,40 +1,72 @@
-import logging
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+"""
+Main entry point for the AgentForge backend.
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
-    handlers=[
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger("agentforge.backend")
+This module creates and configures the FastAPI application.
+"""
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
+from app.core.config import settings
+from app.core.logger import logger
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Handles application startup and shutdown events.
+    """
+
+    logger.info("=" * 60)
+    logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
+    logger.info(f"Environment: {settings.ENVIRONMENT}")
+    logger.info("=" * 60)
+
+    # Future initialization:
+    # - Database connection
+    # - Browser engine
+    # - Agent runtime
+    # - Plugin registry
+
+    yield
+
+    logger.info("=" * 60)
+    logger.info(f"Shutting down {settings.APP_NAME}")
+    logger.info("=" * 60)
+
 
 app = FastAPI(
-    title="AgentForge API",
-    description="Backend services and orchestration API for AgentForge",
-    version="1.0.0"
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description="Reusable Agentic AI Platform",
+    lifespan=lifespan,
 )
 
-# CORS configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Adjust for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-@app.get("/")
+@app.get("/", tags=["Root"])
 async def root():
+    """
+    Root endpoint.
+    """
     return {
-        "name": "AgentForge API",
-        "status": "healthy",
-        "version": "1.0.0"
+        "application": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "message": "AgentForge Backend is running"
     }
 
-@app.get("/api/v1/health")
-async def health_check():
-    return {"status": "healthy"}
+
+@app.get("/health", tags=["Health"])
+async def health():
+    """
+    Health check endpoint.
+
+    Used by deployment platforms, Docker,
+    Kubernetes, and monitoring services.
+    """
+    return {
+        "status": "healthy",
+        "application": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+        "environment": settings.ENVIRONMENT,
+    }
