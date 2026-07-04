@@ -1,26 +1,37 @@
 """
 Purpose:
-    Define configuration settings for page navigations.
+    Defines navigation configuration for page navigation operations.
 
 Responsibilities:
-    - Hold parameters like navigation timeouts, referer, and page-load waiting strategy.
+    - Store browser-agnostic navigation settings.
+    - Validate navigation configuration.
+    - Provide a reusable configuration model.
 
 Must NOT do:
-    - Depend on any browser automation library or framework.
+    - Import Playwright.
+    - Perform navigation.
+    - Contain browser logic.
 """
 
-from __future__ import annotations
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.browser_engine.models.load_state import LoadState
 
 
 class NavigationOptions(BaseModel):
     """
-    Data model representing options for page navigation and waiting events.
+    Configuration options used during page navigation.
     """
-    timeout: float = Field(default=30000.0, description="Max navigation duration in milliseconds")
-    wait_until: str = Field(
-        default="load",
-        description="Event indicating completion: 'load', 'domcontentloaded', 'networkidle', 'commit'"
+
+    model_config = ConfigDict(frozen=True)
+
+    timeout: int = Field(
+        default=30_000,
+        ge=0,
+        description="Maximum navigation timeout in milliseconds.",
     )
-    referer: Optional[str] = Field(default=None, description="Referer header value for navigation request")
+
+    wait_until: LoadState = Field(
+        default=LoadState.LOAD,
+        description="Page load state that marks navigation as complete.",
+    )

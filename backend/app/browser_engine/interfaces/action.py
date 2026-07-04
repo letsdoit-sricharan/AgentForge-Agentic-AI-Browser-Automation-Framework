@@ -1,39 +1,35 @@
 """
 Purpose:
-    Define the interface for Action components in the AgentForge Browser Engine.
-    This supports command-pattern actions that can be executed dynamically on page objects.
+    Defines the abstract Action interface for reusable browser actions.
 
 Responsibilities:
-    - Define an abstract method `execute` that runs a specific page action or sequence.
-    - Standardize parameters and returns for action execution.
+    - Define a common execution contract.
+    - Enable interchangeable browser actions.
+    - Support future logging, tracing, and middleware.
 
 Must NOT do:
-    - Implement concrete click, fill, or scroll actions.
-    - Expose library-specific classes.
+    - Import Playwright.
+    - Contain browser implementation logic.
+    - Handle retries or business decisions.
 """
 
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from app.browser_engine.interfaces.page import Page
+from abc import ABC, abstractmethod
 
 
 class Action(ABC):
     """
-    Abstract base class representing a reusable browser action or sequence.
+    Abstract interface representing a browser action.
+
+    Concrete implementations encapsulate a single browser operation,
+    such as clicking an element, filling a form field, or taking a
+    screenshot.
     """
 
     @abstractmethod
-    async def execute(self, page: Page) -> Any:
+    async def execute(self) -> None:
         """
-        Execute the custom browser action on the provided page.
-
-        Args:
-            page: The Page instance to perform the action on.
-
-        Returns:
-            The output of the action execution, if any.
+        Execute the browser action.
         """
-        pass
+        raise NotImplementedError

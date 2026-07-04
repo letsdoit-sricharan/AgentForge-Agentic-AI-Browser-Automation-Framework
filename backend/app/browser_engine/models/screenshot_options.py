@@ -1,27 +1,66 @@
 """
 Purpose:
-    Define configuration settings for capturing screenshots.
+    Defines screenshot configuration for the AgentForge Browser Engine.
 
 Responsibilities:
-    - Hold parameters like screenshot path, format, quality, and full-page capture options.
+    - Store screenshot configuration.
+    - Validate screenshot settings.
+    - Provide a reusable browser-agnostic configuration object.
 
 Must NOT do:
-    - Depend on any browser automation library or framework.
+    - Import Playwright.
+    - Capture screenshots.
+    - Perform file operations.
+    - Contain browser logic.
 """
 
-from __future__ import annotations
-from typing import Optional, List
-from pydantic import BaseModel, Field
+from pathlib import Path
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from app.browser_engine.models.screenshot_type import ScreenshotType
 
 
 class ScreenshotOptions(BaseModel):
     """
-    Data model representing settings for taking page and element screenshots.
+    Configuration options used when capturing a screenshot.
+
+    This model is browser-agnostic and is translated into
+    browser-specific screenshot options by the implementation layer.
     """
-    path: Optional[str] = Field(default=None, description="Output file path where screenshot is saved")
-    full_page: bool = Field(default=False, description="Capture full scrollable page screenshot")
-    type: str = Field(default="png", description="Image format: 'png' or 'jpeg'")
-    quality: Optional[int] = Field(default=None, description="Quality for jpeg format (0-100)")
-    omit_background: bool = Field(default=False, description="Hide default background to support transparent images")
-    mask: Optional[List[str]] = Field(default=None, description="CSS selectors to mask before taking screenshot")
-    timeout: float = Field(default=30000.0, description="Timeout in milliseconds for capturing screenshot")
+
+    model_config = ConfigDict(frozen=True)
+
+    path: Path = Field(
+        description="Destination path where the screenshot will be saved."
+    )
+
+    full_page: bool = Field(
+        default=False,
+        description="Capture the entire page instead of only the visible viewport.",
+    )
+
+    image_type: ScreenshotType = Field(
+        default=ScreenshotType.PNG,
+        description="Image format used for the screenshot.",
+    )
+
+    quality: int | None = Field(
+        default=None,
+        ge=0,
+        le=100,
+        description="JPEG image quality (0-100). Applicable only for JPEG screenshots.",
+    )
+
+    @model_validator(mode="after")
+    def validate_quality(self) -> "ScreenshotOptions":
+        """
+        Ensure that quality is only specified for JPEG screenshots.
+        """
+
+        if self.image_type == ScreenshotType.PNG and self.quality is not None:
+            raise ValueError(
+                "Quality can only be specified when image_type is JPEG."
+            )
+
+        return self
