@@ -1,20 +1,38 @@
 """
 Purpose:
-    Define navigation-specific exception classes for the Browser Engine.
+    Defines navigation-related exceptions for the Browser Engine.
 
 Responsibilities:
-    - Define BrowserNavigationError subclassing BrowserEngineError.
+    - Represent page navigation failures.
+    - Abstract browser-specific navigation exceptions.
 
 Must NOT do:
-    - Expose library-specific navigation exception objects.
+    - Import Playwright.
+    - Perform navigation.
 """
 
-from __future__ import annotations
 from app.browser_engine.exceptions.browser_errors import BrowserEngineError
 
 
-class BrowserNavigationError(BrowserEngineError):
+class NavigationError(BrowserEngineError):
     """
-    Exception raised when a page navigation fails (e.g. invalid URL, network down, SSL failure).
+    Raised when page navigation fails.
     """
+
+    pass
+
+
+class InvalidUrlError(NavigationError):
+    """
+    Raised when an invalid URL is provided.
+    """
+
+    pass
+
+
+class PageLoadError(NavigationError):
+    """
+    Raised when a page fails to load successfully.
+    """
+
     pass

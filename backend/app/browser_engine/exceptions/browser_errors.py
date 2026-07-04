@@ -1,22 +1,61 @@
 """
 Purpose:
-    Define base exception classes for the Browser Engine components.
+    Defines the base exception hierarchy for the Browser Engine.
 
 Responsibilities:
-    - Establish a custom error hierarchy starting with BrowserEngineError.
+    - Define browser-engine-specific exceptions.
+    - Provide a common base exception for the Browser Engine.
 
 Must NOT do:
-    - Expose library-specific exception objects (e.g. Playwright Error).
+    - Import Playwright.
+    - Handle exceptions.
+    - Contain browser logic.
 """
-
-from __future__ import annotations
-from typing import Optional
 
 
 class BrowserEngineError(Exception):
     """
-    Base exception for all errors raised within the Browser Engine package.
+    Base exception for all Browser Engine errors.
     """
-    def __init__(self, message: str, original_error: Optional[Exception] = None) -> None:
-        super().__init__(message)
-        self.original_error = original_error
+
+    pass
+
+
+class BrowserLaunchError(BrowserEngineError):
+    """
+    Raised when the browser fails to launch.
+    """
+
+    pass
+
+
+class BrowserClosedError(BrowserEngineError):
+    """
+    Raised when an operation is attempted on a closed browser.
+    """
+
+    pass
+
+
+class SessionError(BrowserEngineError):
+    """
+    Raised when a browser session encounters an error.
+    """
+
+    pass
+
+
+class PageError(BrowserEngineError):
+    """
+    Raised when a page operation fails.
+    """
+
+    pass
+
+
+class LocatorError(BrowserEngineError):
+    """
+    Raised when a locator operation fails.
+    """
+
+    pass
