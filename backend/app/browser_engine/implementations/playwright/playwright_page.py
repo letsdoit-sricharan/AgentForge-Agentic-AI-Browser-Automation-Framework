@@ -1,55 +1,178 @@
 """
 Purpose:
-    Provide the concrete Playwright implementation for the Page interface.
+    Playwright implementation of the Page interface.
 
 Responsibilities:
-    - Wrap Playwright's async Page instance.
-    - Implement abstract methods defined in the Page interface.
-    - Expose page controls and query methods cleanly.
+    - Perform page-level operations.
+    - Hide the native Playwright Page object.
+    - Translate Playwright exceptions into AgentForge exceptions.
 
 Must NOT do:
-    - Expose internal Playwright page objects to modules calling this class.
-    - Contain domain-specific selectors or logic.
+    - Launch browsers.
+    - Manage browser sessions.
+    - Contain business logic.
 """
 
 from __future__ import annotations
-from typing import Any, Optional
-from playwright.async_api import Page as PWPage
 
-from app.browser_engine.interfaces.page import Page
+from pathlib import Path
+
+from playwright.async_api import (
+    Page as PlaywrightPageInstance,
+    TimeoutError as PlaywrightTimeoutError,
+)
+
+from app.browser_engine.exceptions.browser_errors import PageError
+from app.browser_engine.exceptions.navigation_errors import (
+    NavigationError,
+)
+from app.browser_engine.exceptions.timeout_errors import (
+    BrowserTimeoutError,
+)
+from app.browser_engine.implementations.playwright.playwright_locator import (
+    PlaywrightLocator,
+)
 from app.browser_engine.interfaces.locator import Locator
+from app.browser_engine.interfaces.page import Page
+from app.browser_engine.models.load_state import LoadState
+from app.browser_engine.models.navigation_options import NavigationOptions
+from app.browser_engine.models.screenshot_options import ScreenshotOptions
 
 
 class PlaywrightPage(Page):
     """
-    Playwright concrete implementation of the Page interface.
+    Playwright implementation of the Page interface.
     """
 
-    def __init__(self, playwright_page: PWPage) -> None:
-        self._page = playwright_page
+    def __init__(self, page: PlaywrightPageInstance) -> None:
+        self._page = page
 
-    async def goto(self, url: str, options: Optional[Any] = None) -> None:
-        await self._page.goto(url)
+    async def goto(
+        self,
+        url: str,
+        options: NavigationOptions | None = None,
+    ) -> None:
+        """
+        Navigate to a URL.
+        """
+        try:
+            kwargs = {}
+
+            if options is not None:
+                kwargs["wait_until"] = options.wait_until.value
+                kwargs["timeout"] = options.timeout
+
+            await self._page.goto(url, **kwargs)
+
+        except PlaywrightTimeoutError as exc:
+            raise BrowserTimeoutError(
+                f"Navigation to '{url}' timed out."
+            ) from exc
+
+        except Exception as exc:
+            raise NavigationError(
+                f"Failed to navigate to '{url}'."
+            ) from exc
+
+    async def reload(self) -> None:
+        """
+        Reload the current page.
+        """
+        try:
+            await self._page.reload()
+
+        except PlaywrightTimeoutError as exc:
+            raise BrowserTimeoutError(
+                "Page reload timed out."
+            ) from exc
+
+        except Exception as exc:
+            raise PageError(
+                "Failed to reload page."
+            ) from exc
+
+    async def wait_for_load(
+        self,
+        state: LoadState = LoadState.LOAD,
+        timeout: int | None = None,
+    ) -> None:
+        """
+        Wait until the page reaches the specified load state.
+        """
+        try:
+            await self._page.wait_for_load_state(
+                state=state.value,
+                timeout=timeout,
+            )
+
+        except PlaywrightTimeoutError as exc:
+            raise BrowserTimeoutError(
+                "Timed out while waiting for page load."
+            ) from exc
+
+    async def screenshot(
+        self,
+        options: ScreenshotOptions,
+    ) -> Path:
+        """
+        Capture a screenshot.
+
+        Returns:
+            Path to the saved screenshot.
+        """
+        try:
+            await self._page.screenshot(
+                path=str(options.path),
+                full_page=options.full_page,
+                type=options.image_type.value,
+                quality=options.quality,
+            )
+
+            return options.path
+
+        except Exception as exc:
+            raise PageError(
+                "Failed to capture screenshot."
+            ) from exc
 
     async def close(self) -> None:
-        await self._page.close()
+        """
+        Close the page.
+        """
+        try:
+            await self._page.close()
 
-    async def url(self) -> str:
-        return self._page.url
-
-    async def title(self) -> str:
-        return await self._page.title()
-
-    async def content(self) -> str:
-        return await self._page.content()
-
-    async def screenshot(self, options: Optional[Any] = None) -> bytes:
-        # Skeleton implementation - returns screenshot bytes
-        raise NotImplementedError("To be implemented in a subsequent sprint")
+        except Exception as exc:
+            raise PageError(
+                "Failed to close page."
+            ) from exc
 
     def locator(self, selector: str) -> Locator:
-        # Skeleton implementation
-        raise NotImplementedError("To be implemented in a subsequent sprint")
+        """
+        Create a locator for the given selector.
+        """
+        return PlaywrightLocator(
+            self._page.locator(selector)
+        )
 
-    async def evaluate(self, expression: str, arg: Optional[Any] = None) -> Any:
-        return await self._page.evaluate(expression, arg)
+    @property
+    def url(self) -> str:
+        """
+        Return the current page URL.
+        """
+        return self._page.url
+
+    @property
+    def title(self) -> str:
+        """
+        Return the current page title.
+
+        Note:
+            Playwright's title() is asynchronous, so this property
+            assumes your Page interface uses an async method instead.
+            If your interface defines `title` as a property, we should
+            revisit that design.
+        """
+        raise NotImplementedError(
+            "Use an async get_title() method instead."
+        )

@@ -1,55 +1,89 @@
 """
 Purpose:
-    Provide the concrete Playwright implementation for the Session interface.
+    Playwright implementation of the Session interface.
 
 Responsibilities:
-    - Wrap Playwright's async BrowserContext instance.
-    - Implement abstract methods defined in the Session interface.
-    - Manage active pages/tabs and storage state within the context.
+    - Manage a browser session (BrowserContext).
+    - Create pages.
+    - Close the session.
+    - Hide Playwright BrowserContext from the rest of AgentForge.
 
 Must NOT do:
-    - Expose internal Playwright BrowserContext objects to modules calling this class.
-    - Access/read/write configuration files directly.
+    - Launch browsers.
+    - Manage the Playwright runtime.
+    - Perform page interactions.
+    - Contain business logic.
 """
 
 from __future__ import annotations
-from typing import Any, List, Dict, TYPE_CHECKING
-from playwright.async_api import BrowserContext as PWBrowserContext
 
+from playwright.async_api import BrowserContext
+
+from app.browser_engine.exceptions.browser_errors import SessionError
+from app.browser_engine.implementations.playwright.playwright_page import (
+    PlaywrightPage,
+)
+from app.browser_engine.interfaces.page import Page
 from app.browser_engine.interfaces.session import Session
-
-if TYPE_CHECKING:
-    from app.browser_engine.interfaces.page import Page
 
 
 class PlaywrightSession(Session):
     """
-    Playwright concrete implementation of the Session interface.
+    Playwright implementation of the Session interface.
     """
 
-    def __init__(self, playwright_context: PWBrowserContext) -> None:
-        self._context = playwright_context
-        self._pages: List[Page] = []
+    def __init__(self, context: BrowserContext) -> None:
+        """
+        Initialize the session.
+
+        Args:
+            context:
+                Native Playwright BrowserContext.
+        """
+        self._context = context
 
     async def new_page(self) -> Page:
-        # Skeleton implementation
-        raise NotImplementedError("To be implemented in a subsequent sprint")
+        """
+        Create a new page within the current browser session.
+
+        Returns:
+            A Page implementation.
+
+        Raises:
+            SessionError:
+                If page creation fails.
+        """
+        try:
+            page = await self._context.new_page()
+            return PlaywrightPage(page)
+
+        except Exception as exc:
+            raise SessionError(
+                "Failed to create a new page."
+            ) from exc
 
     async def close(self) -> None:
-        await self._context.close()
+        """
+        Close the browser session.
+        """
+        try:
+            await self._context.close()
+
+        except Exception as exc:
+            raise SessionError(
+                "Failed to close the browser session."
+            ) from exc
 
     @property
-    def pages(self) -> List[Page]:
-        return self._pages
+    def is_closed(self) -> bool:
+        """
+        Indicates whether the session has been closed.
 
-    async def get_cookies(self) -> List[Dict[str, Any]]:
-        return await self._context.cookies()
-
-    async def add_cookies(self, cookies: List[Dict[str, Any]]) -> None:
-        await self._context.add_cookies(cookies)
-
-    async def clear_cookies(self) -> None:
-        await self._context.clear_cookies()
-
-    async def get_storage_state(self) -> Dict[str, Any]:
-        return await self._context.storage_state()
+        Returns:
+            True if the underlying BrowserContext is closed,
+            otherwise False.
+        """
+        try:
+            return self._context.pages is None
+        except Exception:
+            return True

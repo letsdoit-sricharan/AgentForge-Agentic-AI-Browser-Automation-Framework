@@ -1,46 +1,95 @@
 """
 Purpose:
-    Provide the concrete Playwright implementation for the Browser interface.
+    Playwright implementation of the Browser interface.
 
 Responsibilities:
-    - Wrap Playwright's async Browser instance.
-    - Implement abstract methods defined in the Browser interface.
-    - Manage the lifetime of the underlying Playwright Browser process.
+    - Launch and close the browser.
+    - Create browser sessions.
+    - Hide Playwright browser objects from the rest of AgentForge.
 
 Must NOT do:
-    - Expose internal Playwright browser objects to modules calling this class.
-    - Contain domain-specific logic or website-specific details.
+    - Manage the Playwright runtime.
+    - Perform page actions.
+    - Perform business logic.
 """
 
 from __future__ import annotations
-from typing import List, Optional, Any, TYPE_CHECKING
-from playwright.async_api import Browser as PWBrowser
 
+from playwright.async_api import Browser as PlaywrightBrowserInstance
+
+from app.browser_engine.implementations.playwright.playwright_adapter import (
+    PlaywrightAdapter,
+)
+from app.browser_engine.implementations.playwright.playwright_session import (
+    PlaywrightSession,
+)
 from app.browser_engine.interfaces.browser import Browser
-
-if TYPE_CHECKING:
-    from app.browser_engine.interfaces.session import Session
+from app.browser_engine.interfaces.session import Session
+from app.browser_engine.models.browser_options import BrowserOptions
 
 
 class PlaywrightBrowser(Browser):
     """
-    Playwright concrete implementation of the Browser interface.
+    Playwright implementation of the Browser interface.
     """
 
-    def __init__(self, playwright_browser: PWBrowser) -> None:
-        self._browser = playwright_browser
-        self._sessions: List[Session] = []
+    def __init__(
+        self,
+        adapter: PlaywrightAdapter,
+    ) -> None:
+        """
+        Initialize the browser implementation.
 
-    async def new_session(self, options: Optional[Any] = None) -> Session:
-        # Skeleton implementation
-        raise NotImplementedError("To be implemented in a subsequent sprint")
+        Args:
+            adapter:
+                Playwright runtime adapter.
+        """
+        self._adapter = adapter
+        self._browser: PlaywrightBrowserInstance | None = None
+
+    async def launch(
+        self,
+        options: BrowserOptions,
+    ) -> None:
+        """
+        Launch the browser.
+
+        Args:
+            options:
+                Browser launch configuration.
+        """
+        await self._adapter.start()
+        self._browser = await self._adapter.launch_browser(options)
 
     async def close(self) -> None:
-        await self._browser.close()
+        """
+        Close the browser and stop the Playwright runtime.
+        """
+        if self._browser is not None:
+            await self._browser.close()
+            self._browser = None
 
-    def is_connected(self) -> bool:
-        return self._browser.is_connected()
+        await self._adapter.stop()
+
+    async def new_session(self) -> Session:
+        """
+        Create a new browser session.
+
+        Returns:
+            Session implementation.
+        """
+        if self._browser is None:
+            raise RuntimeError(
+                "Browser has not been launched."
+            )
+
+        context = await self._browser.new_context()
+
+        return PlaywrightSession(context)
 
     @property
-    def sessions(self) -> List[Session]:
-        return self._sessions
+    def is_running(self) -> bool:
+        """
+        Indicates whether the browser has been launched.
+        """
+        return self._browser is not None

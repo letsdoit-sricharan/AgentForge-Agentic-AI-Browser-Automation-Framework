@@ -18,10 +18,10 @@ Must NOT do:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-
-from app.browser_engine.models.load_state import LoadState
+from pathlib import Path
 
 from app.browser_engine.interfaces.locator import Locator
+from app.browser_engine.models.load_state import LoadState
 from app.browser_engine.models.navigation_options import NavigationOptions
 from app.browser_engine.models.screenshot_options import ScreenshotOptions
 
@@ -30,8 +30,8 @@ class Page(ABC):
     """
     Abstract interface representing a single browser page or tab.
 
-    Concrete implementations must hide the underlying browser
-    automation library from the rest of the application.
+    Concrete implementations must completely hide the underlying
+    browser automation library from the rest of AgentForge.
     """
 
     @abstractmethod
@@ -41,14 +41,24 @@ class Page(ABC):
         options: NavigationOptions | None = None,
     ) -> None:
         """
-        Navigate to a URL.
+        Navigate to the specified URL.
+
+        Args:
+            url:
+                Destination URL.
+
+            options:
+                Optional navigation configuration.
         """
         raise NotImplementedError
 
     @abstractmethod
     async def title(self) -> str:
         """
-        Return the current page title.
+        Retrieve the current page title.
+
+        Returns:
+            The current page title.
         """
         raise NotImplementedError
 
@@ -56,7 +66,10 @@ class Page(ABC):
     @abstractmethod
     def url(self) -> str:
         """
-        Return the current page URL.
+        Retrieve the current page URL.
+
+        Returns:
+            The current page URL.
         """
         raise NotImplementedError
 
@@ -64,6 +77,13 @@ class Page(ABC):
     def locator(self, selector: str) -> Locator:
         """
         Create a locator for the given selector.
+
+        Args:
+            selector:
+                CSS, XPath, text, or other supported selector.
+
+        Returns:
+            A browser-agnostic Locator instance.
         """
         raise NotImplementedError
 
@@ -71,9 +91,16 @@ class Page(ABC):
     async def screenshot(
         self,
         options: ScreenshotOptions,
-    ) -> None:
+    ) -> Path:
         """
         Capture a screenshot of the current page.
+
+        Args:
+            options:
+                Screenshot configuration.
+
+        Returns:
+            Path to the saved screenshot.
         """
         raise NotImplementedError
 
@@ -85,6 +112,13 @@ class Page(ABC):
     ) -> None:
         """
         Wait until the page reaches the specified load state.
+
+        Args:
+            state:
+                Desired page load state.
+
+            timeout:
+                Maximum wait time in milliseconds.
         """
         raise NotImplementedError
 
