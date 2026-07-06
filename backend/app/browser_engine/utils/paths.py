@@ -1,45 +1,64 @@
 """
 Purpose:
-    Provide utilities for resolving file system paths for download and session storage.
+    Provides filesystem path utilities for the Browser Engine.
 
 Responsibilities:
-    - Return default directories for session profiles, downloads, and screenshots.
-    - Ensure directories exist.
+    - Manage browser engine directories.
+    - Ensure required folders exist.
+    - Generate common file paths.
 
 Must NOT do:
-    - Reference specific local machine hardcoded absolute paths (outside workspace).
+    - Perform browser automation.
+    - Read or write cookies.
+    - Handle downloads.
 """
 
 from __future__ import annotations
+
 from pathlib import Path
 
-# Resolve base directories relative to the backend app package
-APP_DIR = Path(__file__).resolve().parent.parent
-STORAGE_DIR = APP_DIR / "storage"
 
+class PathManager:
+    """
+    Utility class for managing browser engine paths.
+    """
 
-def get_session_storage_path(session_id: str) -> Path:
-    """
-    Get the directory path where session state data is stored.
-    """
-    path = STORAGE_DIR / "sessions" / session_id
-    path.mkdir(parents=True, exist_ok=True)
-    return path
+    _ROOT = Path.cwd()
 
+    _SCREENSHOTS = _ROOT / "screenshots"
+    _DOWNLOADS = _ROOT / "downloads"
+    _COOKIES = _ROOT / "cookies"
+    _TEMP = _ROOT / "temp"
 
-def get_download_storage_path() -> Path:
-    """
-    Get the directory path where downloaded files are saved.
-    """
-    path = STORAGE_DIR / "downloads"
-    path.mkdir(parents=True, exist_ok=True)
-    return path
+    @classmethod
+    def ensure_directories(cls) -> None:
+        """
+        Create required directories if they do not exist.
+        """
+        for directory in (
+            cls._SCREENSHOTS,
+            cls._DOWNLOADS,
+            cls._COOKIES,
+            cls._TEMP,
+        ):
+            directory.mkdir(parents=True, exist_ok=True)
 
+    @classmethod
+    def screenshot_path(cls, filename: str) -> Path:
+        cls.ensure_directories()
+        return cls._SCREENSHOTS / filename
 
-def get_screenshot_storage_path() -> Path:
-    """
-    Get the directory path where screenshot captures are stored.
-    """
-    path = STORAGE_DIR / "screenshots"
-    path.mkdir(parents=True, exist_ok=True)
-    return path
+    @classmethod
+    def download_path(cls, filename: str) -> Path:
+        cls.ensure_directories()
+        return cls._DOWNLOADS / filename
+
+    @classmethod
+    def cookie_path(cls, filename: str = "cookies.json") -> Path:
+        cls.ensure_directories()
+        return cls._COOKIES / filename
+
+    @classmethod
+    def temp_path(cls, filename: str) -> Path:
+        cls.ensure_directories()
+        return cls._TEMP / filename

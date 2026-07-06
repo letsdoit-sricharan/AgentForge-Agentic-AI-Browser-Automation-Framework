@@ -1,38 +1,52 @@
 """
 Purpose:
-    Provide utilities for managing and tracking downloaded files.
+    Utility functions for downloaded files.
 
 Responsibilities:
-    - Helper functions to verify, move, and rename downloaded files.
-    - Check file sizes and mime-types.
+    - Save downloaded files.
+    - Generate unique filenames.
+    - Move downloads.
 
 Must NOT do:
-    - Store state about active download sessions (this belongs in managers).
+    - Launch browsers.
+    - Manage Playwright downloads directly.
 """
 
 from __future__ import annotations
+
 import shutil
+from datetime import datetime
 from pathlib import Path
 
+from app.browser_engine.utils.paths import PathManager
 
-def move_downloaded_file(source_path: str, target_dir: str, filename: str) -> str:
+
+class DownloadManager:
     """
-    Move a downloaded file from its temporary source path to a structured target directory.
-
-    Args:
-        source_path: The absolute path of the downloaded file.
-        target_dir: The directory where the file should be moved.
-        filename: The desired name for the file.
-
-    Returns:
-        The new absolute path of the moved file.
+    Utility class for managing downloaded files.
     """
-    source = Path(source_path)
-    if not source.exists():
-        raise FileNotFoundError(f"Source file does not exist: {source_path}")
 
-    target_path = Path(target_dir) / filename
-    target_path.parent.mkdir(parents=True, exist_ok=True)
+    @staticmethod
+    def generate_filename(prefix: str, extension: str) -> str:
+        """
+        Generate a timestamp-based filename.
+        """
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        extension = extension.lstrip(".")
+        return f"{prefix}_{timestamp}.{extension}"
 
-    shutil.move(str(source), str(target_path))
-    return str(target_path.resolve())
+    @staticmethod
+    def move(source: Path, destination: Path) -> Path:
+        """
+        Move a file to a destination.
+        """
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(source), str(destination))
+        return destination
+
+    @staticmethod
+    def default_download_path(filename: str) -> Path:
+        """
+        Return the default download location.
+        """
+        return PathManager.download_path(filename)

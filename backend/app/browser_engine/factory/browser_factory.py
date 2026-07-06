@@ -1,42 +1,44 @@
 """
 Purpose:
-    Provide a factory for creating instances of Browser and Session interfaces.
+    Factory responsible for creating Browser Engine implementations.
 
 Responsibilities:
-    - Instantiate the concrete Browser class based on settings (e.g. Playwright or future adapters).
-    - Provide a centralized configuration point for selecting the underlying automation library.
+    - Instantiate browser implementations.
+    - Hide browser backend details.
+    - Return Browser interface objects.
 
 Must NOT do:
-    - Couple client code directly to concrete classes.
-    - Leak Playwright imports to the rest of the application (use dynamic imports or adapter packaging).
+    - Launch browsers.
+    - Manage browser lifecycle.
+    - Store browser instances.
+    - Contain business logic.
 """
 
 from __future__ import annotations
-from typing import Any, Optional
 
+from app.browser_engine.implementations.playwright.playwright_adapter import (
+    PlaywrightAdapter,
+)
+from app.browser_engine.implementations.playwright.playwright_browser import (
+    PlaywrightBrowser,
+)
 from app.browser_engine.interfaces.browser import Browser
 
 
 class BrowserFactory:
     """
-    Factory for producing concrete instances of the Browser interface.
+    Factory responsible for creating Browser implementations.
     """
 
     @staticmethod
-    async def create_browser(engine_type: str = "playwright", options: Optional[Any] = None) -> Browser:
+    def create_browser() -> Browser:
         """
-        Create and launch a concrete Browser instance.
-
-        Args:
-            engine_type: The automation engine backend to use ('playwright', 'selenium', etc.).
-            options: Configuration options for launching the browser.
+        Create a browser implementation.
 
         Returns:
-            An instance of the Browser interface.
+            Browser:
+                A browser implementing the Browser interface.
         """
-        if engine_type.lower() == "playwright":
-            from app.browser_engine.implementations.playwright.playwright_adapter import PlaywrightAdapter
-            adapter = PlaywrightAdapter()
-            return await adapter.launch(options)
-        else:
-            raise ValueError(f"Unsupported browser engine type: {engine_type}")
+        adapter = PlaywrightAdapter()
+
+        return PlaywrightBrowser(adapter)

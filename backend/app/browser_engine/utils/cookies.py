@@ -1,35 +1,54 @@
 """
 Purpose:
-    Provide utilities for formatting, serializing, and validating cookies.
+    Utility functions for storing and loading browser cookies.
 
 Responsibilities:
-    - Serialize cookies to JSON structure.
-    - Validate cookie attributes before loading into context.
+    - Save cookies to disk.
+    - Load cookies from disk.
 
 Must NOT do:
-    - Deal directly with file I/O operations (delegated to managers or paths).
+    - Manage browser sessions.
+    - Depend on Playwright.
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List
+
+import json
+from pathlib import Path
+from typing import Any
 
 
-def format_cookies_for_storage(cookies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+class CookieManager:
     """
-    Format and clean cookie dictionaries to ensure they are safe for serialization.
+    Utility class for cookie persistence.
     """
-    cleaned_cookies = []
-    for cookie in cookies:
-        cleaned_cookie = {
-            "name": cookie.get("name"),
-            "value": cookie.get("value"),
-            "domain": cookie.get("domain"),
-            "path": cookie.get("path", "/"),
-            "expires": cookie.get("expires"),
-            "httpOnly": cookie.get("httpOnly", False),
-            "secure": cookie.get("secure", False),
-            "sameSite": cookie.get("sameSite", "Lax"),
-        }
-        # Only include non-None properties
-        cleaned_cookies.append({k: v for k, v in cleaned_cookie.items() if v is not None})
-    return cleaned_cookies
+
+    @staticmethod
+    def save(
+        cookies: list[dict[str, Any]],
+        path: Path,
+    ) -> None:
+        """
+        Save cookies to a JSON file.
+        """
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        with path.open(
+            "w",
+            encoding="utf-8",
+        ) as file:
+            json.dump(cookies, file, indent=4)
+
+    @staticmethod
+    def load(path: Path) -> list[dict[str, Any]]:
+        """
+        Load cookies from a JSON file.
+        """
+        if not path.exists():
+            return []
+
+        with path.open(
+            "r",
+            encoding="utf-8",
+        ) as file:
+            return json.load(file)
