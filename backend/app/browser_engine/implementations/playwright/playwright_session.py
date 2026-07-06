@@ -3,87 +3,75 @@ Purpose:
     Playwright implementation of the Session interface.
 
 Responsibilities:
-    - Manage a browser session (BrowserContext).
-    - Create pages.
-    - Close the session.
-    - Hide Playwright BrowserContext from the rest of AgentForge.
+    - Manage a single Playwright BrowserContext.
+    - Create browser pages within the context.
+    - Close the browser context.
+    - Expose the session state.
 
 Must NOT do:
-    - Launch browsers.
-    - Manage the Playwright runtime.
+    - Expose Playwright objects outside the Browser Engine.
+    - Launch or close the browser process.
     - Perform page interactions.
-    - Contain business logic.
+    - Handle logging or retries.
 """
 
 from __future__ import annotations
 
 from playwright.async_api import BrowserContext
 
-from app.browser_engine.exceptions.browser_errors import SessionError
+from app.browser_engine.interfaces.page import Page
+from app.browser_engine.interfaces.session import Session
 from app.browser_engine.implementations.playwright.playwright_page import (
     PlaywrightPage,
 )
-from app.browser_engine.interfaces.page import Page
-from app.browser_engine.interfaces.session import Session
 
 
 class PlaywrightSession(Session):
     """
     Playwright implementation of the Session interface.
+
+    A session wraps a Playwright BrowserContext, providing
+    isolated browser state such as cookies, local storage,
+    authentication, and multiple pages.
     """
 
     def __init__(self, context: BrowserContext) -> None:
         """
-        Initialize the session.
+        Initialize a Playwright browser session.
 
         Args:
             context:
-                Native Playwright BrowserContext.
+                The underlying Playwright BrowserContext.
         """
         self._context = context
+        self._closed = False
 
     async def new_page(self) -> Page:
         """
-        Create a new page within the current browser session.
+        Create a new page within this session.
 
         Returns:
-            A Page implementation.
-
-        Raises:
-            SessionError:
-                If page creation fails.
+            A Browser Engine Page abstraction.
         """
-        try:
-            page = await self._context.new_page()
-            return PlaywrightPage(page)
-
-        except Exception as exc:
-            raise SessionError(
-                "Failed to create a new page."
-            ) from exc
+        playwright_page = await self._context.new_page()
+        return PlaywrightPage(playwright_page)
 
     async def close(self) -> None:
         """
-        Close the browser session.
+        Close the browser session and release its resources.
         """
-        try:
-            await self._context.close()
+        if self._closed:
+            return
 
-        except Exception as exc:
-            raise SessionError(
-                "Failed to close the browser session."
-            ) from exc
+        await self._context.close()
+        self._closed = True
 
     @property
-    def is_closed(self) -> bool:
+    def is_active(self) -> bool:
         """
-        Indicates whether the session has been closed.
+        Indicates whether the session is currently active.
 
         Returns:
-            True if the underlying BrowserContext is closed,
-            otherwise False.
+            True if the session has not been closed.
         """
-        try:
-            return self._context.pages is None
-        except Exception:
-            return True
+        return not self._closed

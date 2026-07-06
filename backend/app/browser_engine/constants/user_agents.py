@@ -1,22 +1,39 @@
 """
 Purpose:
-    Define default user agents for the browser contexts.
+    Defines commonly used browser User-Agent strings.
 
 Responsibilities:
-    - Hold desktop and mobile user agent strings to help emulate real browsers.
+    - Provide centralized user-agent definitions.
+    - Avoid hardcoded strings throughout the Browser Engine.
 
 Must NOT do:
-    - Include logic for rotation or fetching remote agent lists.
+    - Perform browser configuration.
+    - Contain business logic.
 """
 
-from __future__ import annotations
-
-DEFAULT_DESKTOP_UA: str = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/114.0.0.0 Safari/537.36"
+# Latest stable desktop Chrome (Windows)
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/138.0.0.0 Safari/537.36"
 )
 
-DEFAULT_MOBILE_UA: str = (
-    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/114.0.0.0 Mobile Safari/537.36"
+# Microsoft Edge
+EDGE_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
+)
+
+# Firefox
+FIREFOX_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:141.0) "
+    "Gecko/20100101 Firefox/141.0"
+)
+
+# Safari (macOS)
+SAFARI_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) "
+    "Version/18.0 Safari/605.1.15"
 )

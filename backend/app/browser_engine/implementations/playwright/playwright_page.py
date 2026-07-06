@@ -3,8 +3,8 @@ Purpose:
     Playwright implementation of the Page interface.
 
 Responsibilities:
-    - Perform page-level operations.
-    - Hide the native Playwright Page object.
+    - Perform page-level browser operations.
+    - Hide the Playwright Page object.
     - Translate Playwright exceptions into AgentForge exceptions.
 
 Must NOT do:
@@ -15,20 +15,14 @@ Must NOT do:
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from playwright.async_api import (
     Page as PlaywrightPageInstance,
     TimeoutError as PlaywrightTimeoutError,
 )
 
 from app.browser_engine.exceptions.browser_errors import PageError
-from app.browser_engine.exceptions.navigation_errors import (
-    NavigationError,
-)
-from app.browser_engine.exceptions.timeout_errors import (
-    BrowserTimeoutError,
-)
+from app.browser_engine.exceptions.navigation_errors import NavigationError
+from app.browser_engine.exceptions.timeout_errors import BrowserTimeoutError
 from app.browser_engine.implementations.playwright.playwright_locator import (
     PlaywrightLocator,
 )
@@ -74,21 +68,51 @@ class PlaywrightPage(Page):
                 f"Failed to navigate to '{url}'."
             ) from exc
 
-    async def reload(self) -> None:
+    async def title(self) -> str:
         """
-        Reload the current page.
+        Return the current page title.
         """
         try:
-            await self._page.reload()
-
-        except PlaywrightTimeoutError as exc:
-            raise BrowserTimeoutError(
-                "Page reload timed out."
-            ) from exc
+            return await self._page.title()
 
         except Exception as exc:
             raise PageError(
-                "Failed to reload page."
+                "Failed to retrieve page title."
+            ) from exc
+
+    @property
+    def url(self) -> str:
+        """
+        Return the current page URL.
+        """
+        return self._page.url
+
+    def locator(self, selector: str) -> Locator:
+        """
+        Create a locator for the given selector.
+        """
+        return PlaywrightLocator(
+            self._page.locator(selector)
+        )
+
+    async def screenshot(
+        self,
+        options: ScreenshotOptions,
+    ) -> None:
+        """
+        Capture a screenshot of the current page.
+        """
+        try:
+            await self._page.screenshot(
+                path=str(options.path),
+                full_page=options.full_page,
+                type=options.image_type.value,
+                quality=options.quality,
+            )
+
+        except Exception as exc:
+            raise PageError(
+                "Failed to capture screenshot."
             ) from exc
 
     async def wait_for_load(
@@ -110,31 +134,6 @@ class PlaywrightPage(Page):
                 "Timed out while waiting for page load."
             ) from exc
 
-    async def screenshot(
-        self,
-        options: ScreenshotOptions,
-    ) -> Path:
-        """
-        Capture a screenshot.
-
-        Returns:
-            Path to the saved screenshot.
-        """
-        try:
-            await self._page.screenshot(
-                path=str(options.path),
-                full_page=options.full_page,
-                type=options.image_type.value,
-                quality=options.quality,
-            )
-
-            return options.path
-
-        except Exception as exc:
-            raise PageError(
-                "Failed to capture screenshot."
-            ) from exc
-
     async def close(self) -> None:
         """
         Close the page.
@@ -147,32 +146,23 @@ class PlaywrightPage(Page):
                 "Failed to close page."
             ) from exc
 
-    def locator(self, selector: str) -> Locator:
+    async def reload(self) -> None:
         """
-        Create a locator for the given selector.
-        """
-        return PlaywrightLocator(
-            self._page.locator(selector)
-        )
-
-    @property
-    def url(self) -> str:
-        """
-        Return the current page URL.
-        """
-        return self._page.url
-
-    @property
-    def title(self) -> str:
-        """
-        Return the current page title.
+        Reload the current page.
 
         Note:
-            Playwright's title() is asynchronous, so this property
-            assumes your Page interface uses an async method instead.
-            If your interface defines `title` as a property, we should
-            revisit that design.
+            This is an implementation convenience method and is
+            not currently part of the Page interface.
         """
-        raise NotImplementedError(
-            "Use an async get_title() method instead."
-        )
+        try:
+            await self._page.reload()
+
+        except PlaywrightTimeoutError as exc:
+            raise BrowserTimeoutError(
+                "Page reload timed out."
+            ) from exc
+
+        except Exception as exc:
+            raise PageError(
+                "Failed to reload page."
+            ) from exc
