@@ -1,46 +1,140 @@
 """
 Purpose:
-    Manage the lifecycle and configuration of browser instances.
-    Provides pooling and tracking capabilities for active browsers.
+    High-level manager responsible for controlling the browser runtime.
 
 Responsibilities:
-    - Launch and close browser instances using the browser factory.
-    - Keep track of running browser instances.
-    - Provide restart logic and health check monitoring.
+    - Own a single browser instance.
+    - Launch and stop the browser.
+    - Create and track browser sessions.
+    - Hide browser implementation details from the rest of AgentForge.
 
 Must NOT do:
-    - Interact with web elements or pages directly.
-    - Depend on Playwright APIs.
+    - Perform page interactions.
+    - Know about Playwright internals.
+    - Contain application business logic.
 """
 
 from __future__ import annotations
-from typing import Dict, Optional, Any
 
+from app.browser_engine.exceptions.browser_errors import (
+    BrowserLaunchError,
+)
+from app.browser_engine.factory.browser_factory import BrowserFactory
 from app.browser_engine.interfaces.browser import Browser
+from app.browser_engine.managers.session_manager import SessionManager
+from app.browser_engine.models.browser_options import BrowserOptions
 
 
 class BrowserManager:
     """
-    Manager responsible for managing the lifecycle, configuration, and pool of active browsers.
+    High-level runtime manager for the Browser Engine.
+
+    This class owns exactly one browser instance and manages the
+    lifecycle of all browser sessions created from it.
     """
 
-    def __init__(self) -> None:
-        self._browsers: Dict[str, Browser] = {}
+    def __init__(
+        self,
+        options: BrowserOptions | None = None,
+    ) -> None:
+        """
+        Initialize the browser manager.
 
-    async def get_browser(self, browser_id: str, options: Optional[Any] = None) -> Browser:
+        Args:
+            options:
+                Browser launch configuration.
         """
-        Retrieve a running browser instance or launch a new one.
-        """
-        raise NotImplementedError("To be implemented in a subsequent sprint")
+        self._options = options or BrowserOptions()
 
-    async def close_browser(self, browser_id: str) -> None:
-        """
-        Close a specific browser instance.
-        """
-        raise NotImplementedError("To be implemented in a subsequent sprint")
+        self._browser: Browser | None = None
 
-    async def close_all(self) -> None:
+        self._sessions: list[SessionManager] = []
+
+    async def start(self) -> None:
         """
-        Close all active browser instances.
+        Launch the browser.
+
+        Calling this method multiple times has no effect.
         """
-        raise NotImplementedError("To be implemented in a subsequent sprint")
+        if self.is_running:
+            return
+
+        self._browser = BrowserFactory.create_browser()
+
+        await self._browser.launch(self._options)
+
+    async def stop(self) -> None:
+        """
+        Close all sessions and stop the browser.
+        """
+        if not self.is_running:
+            return
+
+        await self.close_all_sessions()
+
+        if self._browser is not None:
+            await self._browser.close()
+
+        self._browser = None
+
+    async def create_session(self) -> SessionManager:
+        """
+        Create a managed browser session.
+
+        Returns:
+            SessionManager
+        """
+        if self._browser is None:
+            raise BrowserLaunchError(
+                "Browser has not been started."
+            )
+
+        session = await self._browser.new_session()
+
+        manager = SessionManager(session)
+
+        self._sessions.append(manager)
+
+        return manager
+
+    async def close_all_sessions(self) -> None:
+        """
+        Close every active browser session.
+        """
+        for session in list(self._sessions):
+            await session.close()
+
+        self._sessions.clear()
+
+    @property
+    def browser(self) -> Browser:
+        """
+        Return the managed browser.
+
+        Raises:
+            BrowserLaunchError
+                If the browser has not been started.
+        """
+        if self._browser is None:
+            raise BrowserLaunchError(
+                "Browser has not been started."
+            )
+
+        return self._browser
+
+    @property
+    def session_count(self) -> int:
+        """
+        Return the number of active sessions.
+        """
+        return len(self._sessions)
+
+    @property
+    def is_running(self) -> bool:
+        """
+        Indicates whether the browser is currently running.
+        """
+        return (
+            self._browser is not None
+            and self._browser.is_running
+        )
