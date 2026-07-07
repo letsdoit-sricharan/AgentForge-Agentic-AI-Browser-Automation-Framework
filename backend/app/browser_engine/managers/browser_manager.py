@@ -6,17 +6,18 @@ Responsibilities:
     - Own a single browser instance.
     - Launch and stop the browser.
     - Create and track browser sessions.
-    - Hide browser implementation details from the rest of AgentForge.
+    - Automatically unregister closed sessions.
 
-Must NOT do:
+Must NOT:
     - Perform page interactions.
-    - Know about Playwright internals.
-    - Contain application business logic.
+    - Know about Playwright.
+    - Contain business logic.
 """
 
 from __future__ import annotations
 
 from app.browser_engine.exceptions.browser_errors import (
+    BrowserClosedError,
     BrowserLaunchError,
 )
 from app.browser_engine.factory.browser_factory import BrowserFactory
@@ -28,33 +29,26 @@ from app.browser_engine.models.browser_options import BrowserOptions
 class BrowserManager:
     """
     High-level runtime manager for the Browser Engine.
-
-    This class owns exactly one browser instance and manages the
-    lifecycle of all browser sessions created from it.
     """
 
     def __init__(
         self,
         options: BrowserOptions | None = None,
     ) -> None:
-        """
-        Initialize the browser manager.
 
-        Args:
-            options:
-                Browser launch configuration.
-        """
         self._options = options or BrowserOptions()
 
         self._browser: Browser | None = None
 
-        self._sessions: list[SessionManager] = []
+        self._sessions: dict[str, SessionManager] = {}
+
+        self._sessions: dict[str, SessionManager] = {}
+
+        self._started = False
 
     async def start(self) -> None:
         """
         Launch the browser.
-
-        Calling this method multiple times has no effect.
         """
         if self.is_running:
             return
@@ -63,76 +57,110 @@ class BrowserManager:
 
         await self._browser.launch(self._options)
 
+        self._started = True
+
     async def stop(self) -> None:
         """
-        Close all sessions and stop the browser.
+        Stop the browser and close all active sessions.
         """
         if not self.is_running:
             return
 
         await self.close_all_sessions()
 
-        if self._browser is not None:
-            await self._browser.close()
+        await self._browser.close()
 
         self._browser = None
 
     async def create_session(self) -> SessionManager:
         """
-        Create a managed browser session.
-
-        Returns:
-            SessionManager
+        Create and register a new browser session.
         """
         if self._browser is None:
-            raise BrowserLaunchError(
-                "Browser has not been started."
+
+            if self._started:
+                raise BrowserClosedError(
+                "Browser has already been stopped."
             )
+
+        raise BrowserLaunchError(
+            "Browser has not been started."
+        )
 
         session = await self._browser.new_session()
 
-        manager = SessionManager(session)
+        manager = SessionManager(
+            session=session,
+            on_close=self._remove_session,
+        )
 
-        self._sessions.append(manager)
+        self._sessions[manager.id] = manager
 
         return manager
 
     async def close_all_sessions(self) -> None:
         """
-        Close every active browser session.
+        Close every active session.
         """
-        for session in list(self._sessions):
+        sessions = list(self._sessions.values())
+
+        for session in sessions:
             await session.close()
 
-        self._sessions.clear()
+    def _remove_session(
+        self,
+        session_id: str,
+    ) -> None:
+        """
+        Remove a closed session.
+        """
+        self._sessions.pop(session_id, None)
+
+    def get_session(
+        self,
+        session_id: str,
+    ) -> SessionManager | None:
+        """
+        Retrieve a session by its ID.
+        """
+        return self._sessions.get(session_id)
 
     @property
     def browser(self) -> Browser:
         """
         Return the managed browser.
-
-        Raises:
-            BrowserLaunchError
-                If the browser has not been started.
         """
         if self._browser is None:
-            raise BrowserLaunchError(
-                "Browser has not been started."
-            )
+
+            if self._started:
+                raise BrowserClosedError(
+                    "Browser has already been stopped."
+                )
+
+        raise BrowserLaunchError(
+            "Browser has not been started."
+        )
 
         return self._browser
 
     @property
     def session_count(self) -> int:
         """
-        Return the number of active sessions.
+        Number of active sessions.
         """
         return len(self._sessions)
 
     @property
+    def sessions(self) -> tuple[SessionManager, ...]:
+        """
+        Immutable view of active sessions.
+        """
+        return tuple(self._sessions.values())
+
+    @property
     def is_running(self) -> bool:
         """
-        Indicates whether the browser is currently running.
+        Whether the browser is running.
         """
         return (
             self._browser is not None

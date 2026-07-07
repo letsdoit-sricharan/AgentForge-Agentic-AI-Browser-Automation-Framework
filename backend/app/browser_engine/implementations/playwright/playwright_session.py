@@ -19,11 +19,12 @@ from __future__ import annotations
 
 from playwright.async_api import BrowserContext
 
-from app.browser_engine.interfaces.page import Page
-from app.browser_engine.interfaces.session import Session
+from app.browser_engine.exceptions.browser_errors import SessionError
 from app.browser_engine.implementations.playwright.playwright_page import (
     PlaywrightPage,
 )
+from app.browser_engine.interfaces.page import Page
+from app.browser_engine.interfaces.session import Session
 
 
 class PlaywrightSession(Session):
@@ -52,9 +53,25 @@ class PlaywrightSession(Session):
 
         Returns:
             A Browser Engine Page abstraction.
+
+        Raises:
+            SessionError:
+                If the session has already been closed or
+                a page cannot be created.
         """
-        playwright_page = await self._context.new_page()
-        return PlaywrightPage(playwright_page)
+        if self._closed:
+            raise SessionError(
+                "Cannot create a page from a closed session."
+            )
+
+        try:
+            playwright_page = await self._context.new_page()
+            return PlaywrightPage(playwright_page)
+
+        except Exception as exc:
+            raise SessionError(
+                "Failed to create a new page."
+            ) from exc
 
     async def close(self) -> None:
         """
@@ -63,8 +80,14 @@ class PlaywrightSession(Session):
         if self._closed:
             return
 
-        await self._context.close()
-        self._closed = True
+        try:
+            await self._context.close()
+            self._closed = True
+
+        except Exception as exc:
+            raise SessionError(
+                "Failed to close the session."
+            ) from exc
 
     @property
     def is_active(self) -> bool:

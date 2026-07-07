@@ -165,3 +165,27 @@ class PlaywrightLocator(Locator):
             raise LocatorError(
                 "Failed while waiting for the element."
             ) from exc
+    
+    def first(self) -> Locator:
+        """
+        Return the first matching element.
+        """
+        return PlaywrightLocator(
+            self._locator.first
+        )
+
+    def last(self) -> Locator:
+        """
+        Return the last matching element.
+        """
+        return PlaywrightLocator(
+            self._locator.last
+        )
+
+    def nth(self, index: int) -> Locator:
+        """
+        Return the nth matching element.
+        """
+        return PlaywrightLocator(
+            self._locator.nth(index)
+        )

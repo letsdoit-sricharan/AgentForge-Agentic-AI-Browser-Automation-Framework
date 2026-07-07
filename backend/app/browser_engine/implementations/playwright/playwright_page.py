@@ -14,6 +14,7 @@ Must NOT do:
 """
 
 from __future__ import annotations
+from pathlib import Path
 
 from playwright.async_api import (
     Page as PlaywrightPageInstance,
@@ -98,9 +99,12 @@ class PlaywrightPage(Page):
     async def screenshot(
         self,
         options: ScreenshotOptions,
-    ) -> None:
+    ) -> Path:
         """
         Capture a screenshot of the current page.
+
+        Returns:
+            Path to the saved screenshot.
         """
         try:
             await self._page.screenshot(
@@ -109,6 +113,8 @@ class PlaywrightPage(Page):
                 type=options.image_type.value,
                 quality=options.quality,
             )
+
+            return options.path
 
         except Exception as exc:
             raise PageError(

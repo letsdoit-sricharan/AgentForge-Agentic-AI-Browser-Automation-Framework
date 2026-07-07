@@ -16,6 +16,7 @@ Must NOT do:
 """
 
 from __future__ import annotations
+from pathlib import Path
 
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -89,18 +90,16 @@ class Page(ABC):
 
     @abstractmethod
     async def screenshot(
-        self,
-        options: ScreenshotOptions,
-    ) -> Path:
+    self,
+    options: ScreenshotOptions,
+    )    -> Path:
         """
         Capture a screenshot of the current page.
 
-        Args:
-            options:
-                Screenshot configuration.
-
         Returns:
-            Path to the saved screenshot.
+            Path:
+                The filesystem path where the screenshot
+                was successfully saved.
         """
         raise NotImplementedError
 

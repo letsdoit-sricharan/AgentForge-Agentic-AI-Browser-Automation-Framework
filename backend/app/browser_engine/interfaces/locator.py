@@ -81,3 +81,28 @@ class Locator(ABC):
             timeout: Optional timeout in milliseconds.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def first(self) -> "Locator":
+        """
+        Return a locator representing the first matching element.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def last(self) -> "Locator":
+        """
+        Return a locator representing the last matching element.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def nth(self, index: int) -> "Locator":
+        """
+        Return a locator representing the nth matching element.
+
+        Args:
+            index:
+                Zero-based index of the element.
+        """
+        raise NotImplementedError
