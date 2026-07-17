@@ -1,0 +1,1 @@
+# Plugin metadata interface
