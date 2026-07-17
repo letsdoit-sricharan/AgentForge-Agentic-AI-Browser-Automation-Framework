@@ -6,7 +6,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.runtime.state import ExecutionState, WorkflowState
+from app.runtime.state.execution_state import ExecutionState
+from app.runtime.state.workflow_state import WorkflowState
 
 from .runtime_memory import RuntimeMemory
 

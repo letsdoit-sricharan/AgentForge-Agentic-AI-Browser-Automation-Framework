@@ -1,5 +1,6 @@
-from app.runtime.state import ExecutionState ,Checkpoint
-from app.runtime.state import WorkflowState 
+from app.runtime.state.checkpoint import Checkpoint
+from app.runtime.state.execution_state import ExecutionState
+from app.runtime.state.workflow_state import WorkflowState
 
 
 execution = ExecutionState(execution_id="exec-001")

@@ -1,4 +1,4 @@
-from app.runtime.state import WorkflowState
+from app.runtime.state.workflow_state import WorkflowState
 workflow = WorkflowState(
     workflow_id="wf-001",
     total_steps=5,

@@ -1,4 +1,5 @@
-from app.runtime.memory import RuntimeMemory, RuntimeVariable
+from app.runtime.memory.runtime_memory import RuntimeMemory
+from app.runtime.memory.variables import RuntimeVariable
 
 
 def test_set_and_get():

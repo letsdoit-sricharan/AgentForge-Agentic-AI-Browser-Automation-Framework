@@ -1,4 +1,4 @@
-from app.runtime.state import ExecutionStatus
+from app.runtime.state.execution_status import ExecutionStatus
 
 print(ExecutionStatus.CREATED)
 print(ExecutionStatus.RUNNING)

@@ -4,7 +4,7 @@ Defines valid execution state transitions.
 
 from __future__ import annotations
 
-from app.runtime.exceptions import StateError
+from app.runtime.exceptions.state_error import StateError
 
 from .execution_status import ExecutionStatus
 

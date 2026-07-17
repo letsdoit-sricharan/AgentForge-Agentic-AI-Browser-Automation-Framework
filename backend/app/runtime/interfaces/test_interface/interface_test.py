@@ -2,12 +2,10 @@
 Tests for runtime interface contracts.
 """
 
-from app.runtime.interfaces import (
-    EventBus,
-    ExecutionEngine,
-    Executor,
-    Strategy,
-)
+from app.runtime.interfaces.event_bus import EventBus
+from app.runtime.interfaces.execution_engine import ExecutionEngine
+from app.runtime.interfaces.executor import Executor
+from app.runtime.interfaces.strategy import Strategy
 
 
 # ---------------------------------------------------------------------

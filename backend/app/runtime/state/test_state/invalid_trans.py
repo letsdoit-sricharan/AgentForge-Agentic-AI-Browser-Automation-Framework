@@ -1,8 +1,6 @@
-from app.runtime.state import (
-    ExecutionState,
-    ExecutionStatus,
-)
-from app.runtime.exceptions import StateError
+from app.runtime.state.execution_state import ExecutionState
+from app.runtime.state.execution_status import ExecutionStatus
+from app.runtime.exceptions.state_error import StateError
 
 state = ExecutionState(execution_id="123")
 
