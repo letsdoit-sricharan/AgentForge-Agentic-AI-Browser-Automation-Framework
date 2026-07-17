@@ -21,7 +21,7 @@ import asyncio
 from dataclasses import dataclass
 
 
-@dataclass(slots=True)
+@dataclass()
 class WaitStrategy:
     """
     Generic wait strategy.

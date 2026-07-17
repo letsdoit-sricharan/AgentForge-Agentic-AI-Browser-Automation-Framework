@@ -12,7 +12,7 @@ from app.runtime.state.workflow_state import WorkflowState
 from .runtime_memory import RuntimeMemory
 
 
-@dataclass(slots=True)
+@dataclass()
 class SharedContext:
     """
     Shared context available to runtime components.

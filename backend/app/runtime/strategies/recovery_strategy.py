@@ -19,7 +19,7 @@ from app.runtime.execution.execution_context import ExecutionContext
 from app.runtime.state.execution_status import ExecutionStatus
 
 
-@dataclass(slots=True)
+@dataclass()
 class RecoveryStrategy:
     """
     Generic recovery strategy.

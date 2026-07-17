@@ -13,7 +13,7 @@ from .execution_state import ExecutionState
 from .workflow_state import WorkflowState
 
 
-@dataclass(slots=True)
+@dataclass()
 class Checkpoint:
     """
     Represents a snapshot of runtime state.

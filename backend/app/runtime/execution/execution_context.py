@@ -16,7 +16,7 @@ from app.runtime.state.execution_status import ExecutionStatus
 from app.runtime.state.workflow_state import WorkflowState
 
 
-@dataclass(slots=True)
+@dataclass()
 class ExecutionContext:
     """
     Shared execution context.

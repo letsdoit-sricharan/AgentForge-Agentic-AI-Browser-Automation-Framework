@@ -15,7 +15,7 @@ from uuid import uuid4
 from app.runtime.events.event_types import RuntimeEventType
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(frozen=True)
 class RuntimeEvent:
     """
     Immutable runtime event.

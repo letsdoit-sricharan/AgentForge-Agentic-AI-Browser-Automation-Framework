@@ -9,7 +9,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 
-@dataclass(slots=True)
+@dataclass()
 class ExecutionMetadata:
     """
     Runtime-generated metadata.

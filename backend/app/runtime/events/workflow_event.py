@@ -15,7 +15,7 @@ from uuid import uuid4
 from app.runtime.events.event_types import WorkflowEventType
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(frozen=True)
 class WorkflowEvent:
     """
     Immutable workflow event.

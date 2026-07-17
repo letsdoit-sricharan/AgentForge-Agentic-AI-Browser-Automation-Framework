@@ -11,7 +11,7 @@ from .execution_status import ExecutionStatus
 from .state_machine import StateMachine
 
 
-@dataclass(slots=True)
+@dataclass()
 class ExecutionState:
     """
     Represents the current execution state.

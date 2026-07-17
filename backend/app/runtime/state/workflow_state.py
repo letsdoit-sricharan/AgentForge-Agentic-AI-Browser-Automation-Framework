@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
 
-@dataclass(slots=True)
+@dataclass()
 class WorkflowState:
     """
     Represents the progress of a workflow execution.

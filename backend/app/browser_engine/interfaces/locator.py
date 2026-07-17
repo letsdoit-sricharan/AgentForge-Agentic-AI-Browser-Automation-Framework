@@ -106,3 +106,24 @@ class Locator(ABC):
                 Zero-based index of the element.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    async def wait_until_hidden(
+        self,
+        timeout: int | None = None,
+    ) -> None:
+        """
+        Wait until the element becomes hidden.
+
+        Args:
+            timeout:
+                Optional timeout in milliseconds.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    async def scroll_into_view(self) -> None:
+        """
+        Scroll the element into the visible viewport.
+        """
+        raise NotImplementedError

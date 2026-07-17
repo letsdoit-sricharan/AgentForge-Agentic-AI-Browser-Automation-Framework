@@ -15,6 +15,7 @@ Must NOT do:
 """
 
 from pathlib import Path
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -45,7 +46,7 @@ class ScreenshotOptions(BaseModel):
         description="Image format used for the screenshot.",
     )
 
-    quality: int | None = Field(
+    quality: Optional[int] = Field(
         default=None,
         ge=0,
         le=100,

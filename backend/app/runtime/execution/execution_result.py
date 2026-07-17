@@ -11,7 +11,7 @@ from typing import Any
 from app.runtime.state.execution_status import ExecutionStatus
 
 
-@dataclass(slots=True)
+@dataclass()
 class ExecutionResult:
     """
     Final result produced by the runtime.

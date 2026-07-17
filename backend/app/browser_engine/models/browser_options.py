@@ -15,6 +15,7 @@ Must NOT do:
 """
 
 from pathlib import Path
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -41,7 +42,7 @@ class BrowserOptions(BaseModel):
         description="Browser viewport configuration.",
     )
 
-    user_agent: str | None = Field(
+    user_agent: Optional[str] = Field(
         default=None,
         description="Optional custom browser user agent.",
     )
@@ -52,7 +53,7 @@ class BrowserOptions(BaseModel):
         description="Delay between browser actions in milliseconds.",
     )
 
-    downloads_path: Path | None = Field(
+    downloads_path: Optional[Path] = Field(
         default=None,
         description="Directory where browser downloads are stored.",
     )

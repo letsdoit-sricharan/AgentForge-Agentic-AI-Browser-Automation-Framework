@@ -12,7 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 
-@dataclass(slots=True)
+@dataclass()
 class ExecutionRequest:
     """
     Represents a request submitted to the runtime.
