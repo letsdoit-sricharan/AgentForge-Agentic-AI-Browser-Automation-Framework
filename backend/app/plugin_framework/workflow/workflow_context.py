@@ -6,6 +6,7 @@ Responsibilities:
     - Provide controlled access to framework resources.
     - Store workflow input data.
     - Share execution state between workflow steps.
+    - Own the active browser session/page for the lifetime of a workflow.
 
 Does NOT:
     - Execute browser operations.
@@ -18,7 +19,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from app.plugins.interfaces import PluginContext
+from app.browser_engine.interfaces.page import Page
+from app.browser_engine.interfaces.session import Session
+from app.plugins.interfaces.plugin_context import PluginContext
 
 
 @dataclass(slots=True)
@@ -28,6 +31,10 @@ class WorkflowContext:
     """
 
     plugin_context: PluginContext
+
+    page: Page
+
+    session: Session
 
     input_data: dict[str, Any] = field(default_factory=dict)
 

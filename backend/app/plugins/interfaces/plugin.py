@@ -13,6 +13,8 @@ Does NOT:
     - Execute browser actions directly.
 """
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -31,25 +33,27 @@ class Plugin(ABC):
         """
         Return immutable metadata describing the plugin.
         """
-        raise NotImplementedError
 
     @abstractmethod
-    def initialize(self, context: PluginContext) -> None:
+    def initialize(
+        self,
+        context: PluginContext,
+    ) -> None:
         """
         Initialize the plugin before execution.
         """
-        raise NotImplementedError
 
     @abstractmethod
-    def execute(self, task: Any) -> Any:
+    async def execute(
+        self,
+        task: Any,
+    ) -> Any:
         """
         Execute a plugin-specific task.
         """
-        raise NotImplementedError
 
     @abstractmethod
     def shutdown(self) -> None:
         """
         Release any resources held by the plugin.
         """
-        raise NotImplementedError

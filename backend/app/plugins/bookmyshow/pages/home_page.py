@@ -1,40 +1,67 @@
 """
 Purpose:
-    Defines the UI contract for the BookMyShow home page.
+    Represents the BookMyShow home page.
 
 Responsibilities:
-    - Store homepage URL.
-    - Define reusable locator constants.
-    - Provide a centralized source for homepage selectors.
+    - Open the homepage.
+    - Wait until the homepage finishes loading.
+    - Verify that the homepage is displayed.
 
 Does NOT:
-    - Perform browser automation.
+    - Execute workflow logic.
     - Import Playwright.
-    - Execute browser actions.
+    - Contain business rules.
 """
 
 from __future__ import annotations
 
-from typing import ClassVar
+from app.actions.navigation import NavigateAction, WaitAction
+from app.browser_engine.models.load_state import LoadState
+from app.plugin_framework.pages import BasePage
 
-from app.plugins.bookmyshow.pages.base_page import PageLocators
 
-
-class HomePage(PageLocators):
+class HomePage(BasePage):
     """
-    BookMyShow home page definitions.
+    Page Object representing the BookMyShow homepage.
     """
 
-    URL: ClassVar[str] = "https://in.bookmyshow.com"
+    URL = "https://in.bookmyshow.com/explore/home"
 
-    # Navigation
-    SIGN_IN_BUTTON: ClassVar[str] = "sign_in_button"
-    CITY_SELECTOR: ClassVar[str] = "city_selector"
+    # Version 1.0
+    # This selector should be reviewed periodically if the site changes.
+    SEARCH_BOX = 'input[placeholder*="Search"]'
 
-    # Search
-    SEARCH_BOX: ClassVar[str] = "search_box"
-    SEARCH_RESULTS: ClassVar[str] = "search_results"
+    async def open(self) -> None:
+        """
+        Navigate to the BookMyShow homepage.
+        """
 
-    # Common
-    HEADER: ClassVar[str] = "header"
-    FOOTER: ClassVar[str] = "footer"
+        await NavigateAction(
+            url=self.URL,
+        ).execute(
+            self.page,
+        )
+
+    async def wait_until_loaded(self) -> None:
+        """
+        Wait until the homepage has finished loading.
+        """
+
+        await WaitAction(
+            load_state=LoadState.LOAD,
+        ).execute(
+            self.page,
+        )
+
+    async def verify_loaded(self) -> bool:
+        """
+        Verify that the homepage has loaded successfully.
+        """
+
+        locator = self.page.locator(
+            self.SEARCH_BOX,
+        )
+
+        await locator.wait()
+
+        return await locator.is_visible()

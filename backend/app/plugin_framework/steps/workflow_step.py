@@ -38,7 +38,7 @@ class WorkflowStep(ABC):
         """
 
     @abstractmethod
-    def execute(
+    async def execute(
         self,
         context: WorkflowContext,
     ) -> StepResult:

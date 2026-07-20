@@ -165,6 +165,46 @@ class PlaywrightLocator(Locator):
             raise LocatorError(
                 "Failed while waiting for the element."
             ) from exc
+
+    async def wait_until_hidden(
+        self,
+        timeout: int | None = None,
+    ) -> None:
+        """
+        Wait until the element becomes hidden.
+        """
+        try:
+            await self._locator.wait_for(
+                state="hidden",
+                timeout=timeout,
+            )
+
+        except PlaywrightTimeoutError as exc:
+            raise BrowserTimeoutError(
+                "Timed out while waiting for the element to become hidden."
+            ) from exc
+
+        except Exception as exc:
+            raise LocatorError(
+                "Failed while waiting for the element to become hidden."
+            ) from exc
+
+    async def scroll_into_view(self) -> None:
+        """
+        Scroll the element into the visible viewport.
+        """
+        try:
+            await self._locator.scroll_into_view_if_needed()
+
+        except PlaywrightTimeoutError as exc:
+            raise BrowserTimeoutError(
+                "Timed out while scrolling the element into view."
+            ) from exc
+
+        except Exception as exc:
+            raise LocatorError(
+                "Failed to scroll the element into view."
+            ) from exc
     
     def first(self) -> Locator:
         """

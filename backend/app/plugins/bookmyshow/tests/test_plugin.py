@@ -5,6 +5,7 @@ Run:
     python -m app.plugins.bookmyshow.tests.test_plugin
 """
 
+import asyncio
 from datetime import date
 
 from app.plugins.bookmyshow.plugin import BookMyShowPlugin
@@ -38,7 +39,7 @@ def test_plugin_metadata() -> None:
     print("✓ Plugin metadata test passed.")
 
 
-def test_plugin_lifecycle() -> None:
+async def test_plugin_lifecycle() -> None:
     """
     Verify initialize -> execute -> shutdown.
     """
@@ -56,7 +57,7 @@ def test_plugin_lifecycle() -> None:
         ticket_count=2,
     )
 
-    result = plugin.execute(request)
+    result = await plugin.execute(request)
 
     assert result.success is True
 
@@ -65,7 +66,7 @@ def test_plugin_lifecycle() -> None:
     print("✓ Plugin lifecycle test passed.")
 
 
-def test_execute_without_initialize() -> None:
+async def test_execute_without_initialize() -> None:
     """
     Verify execution without initialization fails.
     """
@@ -80,22 +81,22 @@ def test_execute_without_initialize() -> None:
     )
 
     try:
-        plugin.execute(request)
+        await plugin.execute(request)
     except RuntimeError:
         print("✓ Initialization guard test passed.")
     else:
         raise AssertionError("Expected RuntimeError.")
 
 
-def run_tests() -> None:
+async def run_tests() -> None:
 
     print("\n" + "=" * 70)
     print("BookMyShow Plugin Tests")
     print("=" * 70)
 
     test_plugin_metadata()
-    test_plugin_lifecycle()
-    test_execute_without_initialize()
+    await test_plugin_lifecycle()
+    await test_execute_without_initialize()
 
     print("-" * 70)
     print("✅ All BookMyShow plugin tests passed!")
@@ -103,4 +104,4 @@ def run_tests() -> None:
 
 
 if __name__ == "__main__":
-    run_tests()
+    asyncio.run(run_tests())

@@ -80,12 +80,12 @@ class BrowserManager:
 
             if self._started:
                 raise BrowserClosedError(
-                "Browser has already been stopped."
-            )
+                    "Browser has already been stopped."
+                )
 
-        raise BrowserLaunchError(
-            "Browser has not been started."
-        )
+            raise BrowserLaunchError(
+                "Browser has not been started."
+            )
 
         session = await self._browser.new_session()
 

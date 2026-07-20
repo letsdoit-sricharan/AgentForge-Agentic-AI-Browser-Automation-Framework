@@ -1,16 +1,16 @@
 """
 Purpose:
-    Entry point for the BookMyShow plugin.
+    BookMyShow plugin implementation.
 
 Responsibilities:
-    - Implement the AgentForge Plugin interface.
+    - Accept booking requests.
     - Execute the BookMyShow booking workflow.
-    - Convert workflow results into booking results.
+    - Return a structured booking result.
 
 Does NOT:
-    - Perform browser automation.
+    - Perform browser automation directly.
     - Import Playwright.
-    - Contain workflow logic.
+    - Contain page-specific logic.
 """
 
 from __future__ import annotations
@@ -18,16 +18,17 @@ from __future__ import annotations
 from typing import Any
 
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
-from app.plugins.bookmyshow.metadata import BOOKMYSHOW_METADATA
-from app.plugins.bookmyshow.models.booking_request import BookingRequest
-from app.plugins.bookmyshow.models.booking_result import BookingResult
-from app.plugins.bookmyshow.workflows.booking_workflow import BookingWorkflow
-from app.plugins.interfaces import Plugin, PluginContext, PluginMetadata
+from app.plugins.interfaces.plugin import Plugin
+from app.plugins.interfaces.plugin_context import PluginContext
+
+from .metadata import METADATA
+from .models.booking_request import BookingRequest
+from .workflows.booking_workflow import BookingWorkflow
 
 
 class BookMyShowPlugin(Plugin):
     """
-    AgentForge BookMyShow plugin.
+    Reference implementation of the BookMyShow plugin.
     """
 
     def __init__(self) -> None:
@@ -35,11 +36,11 @@ class BookMyShowPlugin(Plugin):
         self._workflow = BookingWorkflow()
 
     @property
-    def metadata(self) -> PluginMetadata:
+    def metadata(self):
         """
-        Return plugin metadata.
+        Return immutable plugin metadata.
         """
-        return BOOKMYSHOW_METADATA
+        return METADATA
 
     def initialize(
         self,
@@ -50,10 +51,10 @@ class BookMyShowPlugin(Plugin):
         """
         self._context = context
 
-    def execute(
+    async def execute(
         self,
         task: Any,
-    ) -> BookingResult:
+    ) -> Any:
         """
         Execute a booking request.
         """
@@ -65,7 +66,7 @@ class BookMyShowPlugin(Plugin):
 
         if not isinstance(task, BookingRequest):
             raise TypeError(
-                "Expected a BookingRequest."
+                "Expected BookingRequest."
             )
 
         workflow_context = WorkflowContext(
@@ -75,13 +76,8 @@ class BookMyShowPlugin(Plugin):
             },
         )
 
-        workflow_result = self._workflow.execute(
+        return await self._workflow.execute(
             workflow_context,
-        )
-
-        return BookingResult(
-            success=workflow_result.success,
-            message=workflow_result.message,
         )
 
     def shutdown(self) -> None:

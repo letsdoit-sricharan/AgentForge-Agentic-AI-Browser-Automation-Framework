@@ -34,7 +34,7 @@ class BaseBookMyShowStep(WorkflowStep):
         Message returned when the step succeeds.
         """
 
-    def execute(
+    async def execute(
         self,
         context: WorkflowContext,
     ) -> StepResult:

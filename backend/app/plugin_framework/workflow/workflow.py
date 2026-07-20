@@ -46,7 +46,6 @@ class Workflow(ABC):
         """
         Return all workflow steps.
         """
-
         return tuple(self._steps)
 
     def add_step(
@@ -56,18 +55,16 @@ class Workflow(ABC):
         """
         Add a workflow step.
         """
-
         self._steps.append(step)
 
     def clear_steps(self) -> None:
         """
         Remove all workflow steps.
         """
-
         self._steps.clear()
 
     @abstractmethod
-    def execute(
+    async def execute(
         self,
         context: WorkflowContext,
     ) -> WorkflowResult:
