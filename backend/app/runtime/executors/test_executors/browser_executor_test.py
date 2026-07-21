@@ -32,8 +32,9 @@ async def browser_task(context, session):
 async def test_browser_executor():
     context = ExecutionContext(
         request=ExecutionRequest(
+            plugin_context=None,
             plugin="bookmyshow",
-            workflow="book_ticket",
+            task="book_ticket",
         ),
         metadata=ExecutionMetadata(),
         execution_state=ExecutionState("exec-1"),

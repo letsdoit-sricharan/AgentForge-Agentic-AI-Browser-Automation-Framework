@@ -23,6 +23,7 @@ from app.plugins.exceptions import (
     PluginAlreadyRegisteredError,
     PluginNotFoundError,
 )
+from app.plugins.models.plugin_state import PluginState, PluginStatus
 
 if TYPE_CHECKING:
     from app.plugins.interfaces import Plugin, PluginMetadata
@@ -36,6 +37,7 @@ class PluginRegistry:
     def __init__(self) -> None:
         self._plugins: dict[str, Plugin] = {}
         self._metadata: dict[str, PluginMetadata] = {}
+        self._states: dict[str, PluginState] = {}
 
     def register(
         self,
@@ -58,6 +60,10 @@ class PluginRegistry:
 
         self._plugins[plugin_name] = plugin
         self._metadata[plugin_name] = metadata
+        self._states[plugin_name] = PluginState(
+            plugin_name=plugin_name,
+            status=PluginStatus.UNLOADED,
+        )
 
     def unregister(
         self,
@@ -77,6 +83,7 @@ class PluginRegistry:
 
         del self._plugins[plugin_name]
         del self._metadata[plugin_name]
+        del self._states[plugin_name]
 
     def get(
         self,
@@ -189,3 +196,60 @@ class PluginRegistry:
             Number of registered plugins.
         """
         return len(self._plugins)
+
+    def get_all(self) -> list[Plugin]:
+        """
+        Return all registered plugin instances.
+
+        Returns:
+            List of Plugin instances.
+        """
+        return list(self._plugins.values())
+
+    def get_state(self, plugin_name: str) -> PluginState:
+        """
+        Return the runtime state object for a registered plugin.
+
+        The registry tracks only that a plugin is registered (UNLOADED).
+        Full lifecycle state (LOADING, READY, etc.) is managed by PluginManager.
+
+        Args:
+            plugin_name: Name of the plugin.
+
+        Returns:
+            PluginState for the plugin.
+
+        Raises:
+            PluginNotFoundError: If plugin is not registered.
+        """
+        if plugin_name not in self._states:
+            raise PluginNotFoundError(plugin_name)
+
+        return self._states[plugin_name]
+
+    def get_plugins_by_status(self, status: PluginStatus) -> list[Plugin]:
+        """
+        Return all plugins matching a given status.
+
+        Note: The registry only has visibility of UNLOADED status. For other
+        statuses, use PluginManager which tracks full lifecycle state.
+
+        Args:
+            status: The PluginStatus to filter by.
+
+        Returns:
+            List of Plugin instances with the given status.
+        """
+        if status == PluginStatus.UNLOADED:
+            return list(self._plugins.values())
+        return []
+
+    def get_all_states(self) -> dict[str, PluginState]:
+        """
+        Return all plugin states.
+
+        Returns:
+            Dictionary mapping plugin names to their states.
+        """
+        return dict(self._states)
+

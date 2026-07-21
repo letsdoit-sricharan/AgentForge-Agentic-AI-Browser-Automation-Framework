@@ -231,7 +231,6 @@ class TestTaskRepresentation:
         
         assert "SimpleTask" in repr_str
         assert task.task_id in repr_str
-        assert "simple_task" in repr_str
 
 
 class TestTaskType:

@@ -1,31 +1,13 @@
 """
 Purpose:
-    Defines the controlled execution context provided to plugins.
+    Re-exports PluginContext for backward compatibility.
 
-Responsibilities:
-    - Expose approved framework services.
-    - Isolate plugins from framework internals.
-    - Act as the plugin's gateway into AgentForge.
+    The canonical definition has moved to app.plugin_framework.plugin_context
+    to break the circular dependency between plugin_framework and plugins.
 
-Does NOT:
-    - Execute workflows.
-    - Manage browser lifecycle.
-    - Store plugin state.
-    - Expose Playwright or browser internals.
+    All existing imports from this module continue to work unchanged.
 """
 
-from dataclasses import dataclass
-from typing import Any
+from app.plugin_framework.plugin_context import PluginContext  # noqa: F401
 
-
-@dataclass
-class PluginContext:
-    """
-    Context object supplied to every plugin.
-    """
-
-    runtime: Any
-    actions: Any
-    memory: Any
-    configuration: Any
-    logger: Any
+__all__ = ["PluginContext"]

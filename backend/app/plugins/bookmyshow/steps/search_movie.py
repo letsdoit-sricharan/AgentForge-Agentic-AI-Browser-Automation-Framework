@@ -1,3 +1,18 @@
+"""
+Purpose:
+    Workflow step that searches for a movie by name on BookMyShow.
+
+Responsibilities:
+    - Type the movie name into the search box.
+    - Select the matching movie from search results.
+    - Verify selection succeeded.
+
+Does NOT:
+    - Import Playwright.
+    - Perform browser automation directly.
+    - Contain page selectors.
+"""
+
 from __future__ import annotations
 
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
@@ -7,15 +22,18 @@ from app.plugins.bookmyshow.pages.movie_page import MoviePage
 from app.plugins.bookmyshow.steps.base_step import BaseBookMyShowStep
 
 
-class SelectMovieStep(BaseBookMyShowStep):
+class SearchMovieStep(BaseBookMyShowStep):
+    """
+    Workflow step: search for a movie by name and select it from results.
+    """
 
     @property
     def name(self) -> str:
-        return "select_movie"
+        return "search_movie"
 
     @property
     def success_message(self) -> str:
-        return "Movie selected successfully."
+        return "Movie found and selected successfully."
 
     async def perform(
         self,

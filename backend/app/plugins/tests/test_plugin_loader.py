@@ -13,7 +13,7 @@ class TestPluginLoader:
 
     def test_discover_plugins(self):
         """Test discovering plugins in the plugins directory."""
-        loader = PluginLoader(plugin_dir="app/plugins")
+        loader = PluginLoader(plugins_directory="app/plugins")
 
         plugins = loader.discover_plugins()
 
@@ -23,7 +23,7 @@ class TestPluginLoader:
 
     def test_load_plugin_success(self):
         """Test loading a valid plugin."""
-        loader = PluginLoader(plugin_dir="app/plugins")
+        loader = PluginLoader(plugins_directory="app/plugins")
 
         plugin = loader.load_plugin("bookmyshow")
 
@@ -36,14 +36,14 @@ class TestPluginLoader:
 
     def test_load_nonexistent_plugin_raises_error(self):
         """Test that loading a nonexistent plugin raises an error."""
-        loader = PluginLoader(plugin_dir="app/plugins")
+        loader = PluginLoader(plugins_directory="app/plugins")
 
         with pytest.raises(PluginLoadError):
             loader.load_plugin("nonexistent_plugin")
 
     def test_load_all_plugins(self):
         """Test loading all available plugins."""
-        loader = PluginLoader(plugin_dir="app/plugins")
+        loader = PluginLoader(plugins_directory="app/plugins")
 
         plugins = loader.load_all_plugins()
 
@@ -52,7 +52,7 @@ class TestPluginLoader:
 
     def test_reload_plugin(self):
         """Test reloading a plugin."""
-        loader = PluginLoader(plugin_dir="app/plugins")
+        loader = PluginLoader(plugins_directory="app/plugins")
 
         # Load once
         plugin1 = loader.load_plugin("bookmyshow")
@@ -63,3 +63,4 @@ class TestPluginLoader:
         assert plugin1 is not None
         assert plugin2 is not None
         assert plugin1.metadata.name == plugin2.metadata.name
+

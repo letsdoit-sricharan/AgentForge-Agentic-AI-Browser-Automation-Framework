@@ -57,7 +57,7 @@ class ExecutionContext:
     @property
     def workflow(self) -> str:
         """Workflow name."""
-        return self.request.workflow
+        return self.request.task
 
     @property
     def status(self) -> ExecutionStatus:

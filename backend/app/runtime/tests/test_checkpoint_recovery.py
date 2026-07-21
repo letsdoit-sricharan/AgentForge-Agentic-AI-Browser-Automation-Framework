@@ -26,6 +26,10 @@ def test_checkpoint_recovery():
     )
 
     execution_state.transition_to(
+        ExecutionStatus.QUEUED
+    )
+
+    execution_state.transition_to(
         ExecutionStatus.RUNNING
     )
 

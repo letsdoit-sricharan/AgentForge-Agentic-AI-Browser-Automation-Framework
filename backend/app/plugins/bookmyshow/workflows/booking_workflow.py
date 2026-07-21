@@ -62,7 +62,7 @@ class BookingWorkflow(Workflow):
     async def execute(
     self,
     context: WorkflowContext,
-    ) -> WorkflowResult:
+) -> WorkflowResult:
         """
         Execute the booking workflow.
         """
@@ -79,8 +79,8 @@ class BookingWorkflow(Workflow):
 
         if not validation.valid:
             return WorkflowResult(
-            success=False,
-            message=validation.message,
+                success=False,
+                message=validation.message,
             )
 
         for step in self.steps:
@@ -91,8 +91,9 @@ class BookingWorkflow(Workflow):
                 return WorkflowResult(
                     success=False,
                     message=(
-                    f"Workflow failed at step "
-                    f"'{step.name}': {result.message}"
+                        f"Workflow failed at step "
+                        f"'{step.name}': {result.message}"
+                    ),
                 ),
             )
 

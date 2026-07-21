@@ -8,6 +8,7 @@ from app.plugins.exceptions.plugin_errors import (
     PluginInitializationError,
     PluginLoadError,
     PluginNotFoundError,
+    PluginRegistrationError,
     PluginStateError,
     PluginValidationError,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "PluginError",
     "PluginNotFoundError",
     "PluginAlreadyRegisteredError",
+    "PluginRegistrationError",  # backward-compatible alias
     "PluginLoadError",
     "PluginInitializationError",
     "PluginExecutionError",

@@ -27,6 +27,9 @@ class DummyStep(BaseBookMyShowStep):
     def success_message(self) -> str:
         return "Dummy step executed successfully."
 
+    async def perform(self, context: WorkflowContext) -> None:
+        pass
+
 
 async def test_execute() -> None:
     """

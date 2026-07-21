@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins.interfaces.plugin_context import PluginContext
@@ -119,7 +119,7 @@ class ExecutionOrchestrator:
         """
         self._logger.info(
             f"Executing request {request.request_id}: "
-            f"plugin={request.plugin_name}, workflow={request.workflow_name}"
+            f"plugin={request.plugin_name}, task={request.workflow_name}"
         )
 
         started_at = datetime.utcnow()
@@ -319,8 +319,8 @@ class ExecutionOrchestrator:
 
     async def _execute_workflow(
         self,
-        plugin: any,
-        workflow: any,
+        plugin: Any,
+        workflow: Any,
         workflow_context: WorkflowContext,
     ):
         """

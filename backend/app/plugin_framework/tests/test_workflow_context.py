@@ -22,6 +22,14 @@ def create_plugin_context() -> PluginContext:
     )
 
 
+class DummyPage:
+    pass
+
+
+class DummySession:
+    pass
+
+
 def test_workflow_context_creation() -> None:
     """
     Test WorkflowContext initialization.
@@ -29,6 +37,8 @@ def test_workflow_context_creation() -> None:
 
     context = WorkflowContext(
         plugin_context=create_plugin_context(),
+        page=DummyPage(),
+        session=DummySession(),
     )
 
     assert context.plugin_context is not None
@@ -45,6 +55,8 @@ def test_input_data() -> None:
 
     context = WorkflowContext(
         plugin_context=create_plugin_context(),
+        page=DummyPage(),
+        session=DummySession(),
         input_data={
             "movie": "Coolie",
             "tickets": 2,
@@ -64,6 +76,8 @@ def test_state_storage() -> None:
 
     context = WorkflowContext(
         plugin_context=create_plugin_context(),
+        page=DummyPage(),
+        session=DummySession(),
     )
 
     context.state["city"] = "Chennai"

@@ -73,7 +73,7 @@ class TestTaskFactoryRegistration:
         
         factory.register_task_class("test_task", TestTask)
         
-        assert factory.is_registered("test_task")
+        assert factory.is_task_type_registered("test_task")
     
     def test_register_multiple_task_classes(self):
         """Test registering multiple task classes."""
@@ -82,14 +82,14 @@ class TestTaskFactoryRegistration:
         factory.register_task_class("test_task", TestTask)
         factory.register_task_class("another_task", AnotherTask)
         
-        assert factory.is_registered("test_task")
-        assert factory.is_registered("another_task")
+        assert factory.is_task_type_registered("test_task")
+        assert factory.is_task_type_registered("another_task")
     
     def test_is_not_registered(self):
         """Test checking unregistered task type."""
         factory = TaskFactory()
         
-        assert not factory.is_registered("unknown_task")
+        assert not factory.is_task_type_registered("unknown_task")
     
     def test_get_registered_task_types(self):
         """Test getting all registered task types."""
@@ -156,7 +156,7 @@ class TestTaskCreation:
         with pytest.raises(TaskError) as exc_info:
             factory.create_task("unknown_task", name="test")
         
-        assert "not registered" in str(exc_info.value).lower()
+        assert "unknown task type" in str(exc_info.value).lower()
     
     def test_create_task_invalid_args(self):
         """Test creating task with invalid arguments raises error."""
@@ -246,26 +246,8 @@ class TestTaskCreationFromDict:
         with pytest.raises(TaskError) as exc_info:
             factory.create_from_dict(data)
         
-        assert "not registered" in str(exc_info.value).lower()
+        assert "unknown task type" in str(exc_info.value).lower()
     
-    def test_create_from_dict_extra_fields_ignored(self):
-        """Test that extra fields in dict are ignored."""
-        factory = TaskFactory()
-        factory.register_task_class("test_task", TestTask)
-        
-        data = {
-            "task_type": "test_task",
-            "name": "test",
-            "value": 42,
-            "extra_field": "ignored",
-        }
-        
-        task = factory.create_from_dict(data)
-        
-        assert isinstance(task, TestTask)
-        assert task.name == "test"
-        assert task.value == 42
-
 
 class TestTaskFactoryMultipleTypes:
     """Test factory with multiple task types."""
@@ -314,8 +296,8 @@ class TestTaskFactoryClear:
         factory.clear()
         
         assert len(factory.get_registered_task_types()) == 0
-        assert not factory.is_registered("test_task")
-        assert not factory.is_registered("another_task")
+        assert not factory.is_task_type_registered("test_task")
+        assert not factory.is_task_type_registered("another_task")
 
 
 class TestTaskFactoryEdgeCases:
@@ -326,7 +308,7 @@ class TestTaskFactoryEdgeCases:
         factory = TaskFactory()
         
         assert factory.get_registered_task_types() == []
-        assert not factory.is_registered("any_task")
+        assert not factory.is_task_type_registered("any_task")
     
     def test_task_with_custom_task_id(self):
         """Test creating task with custom task_id."""

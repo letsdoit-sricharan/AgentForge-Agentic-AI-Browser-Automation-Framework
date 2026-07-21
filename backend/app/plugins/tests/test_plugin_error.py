@@ -6,6 +6,7 @@ Run:
 """
 
 from app.plugins.exceptions import (
+    PluginAlreadyRegisteredError,
     PluginError,
     PluginExecutionError,
     PluginLoadError,
@@ -22,6 +23,9 @@ def test_exception_inheritance() -> None:
     assert issubclass(PluginValidationError, PluginError)
     assert issubclass(PluginExecutionError, PluginError)
 
+    # PluginRegistrationError is an alias for PluginAlreadyRegisteredError
+    assert PluginRegistrationError is PluginAlreadyRegisteredError
+
     print("✓ Exception inheritance test passed.")
 
 
@@ -29,20 +33,23 @@ def test_raise_plugin_load_error() -> None:
     """Verify PluginLoadError."""
 
     try:
-        raise PluginLoadError("Unable to load plugin.")
+        raise PluginLoadError("my_plugin", "module not found")
     except PluginLoadError as exc:
-        assert str(exc) == "Unable to load plugin."
+        assert "my_plugin" in str(exc)
+        assert exc.plugin_name == "my_plugin"
+        assert exc.reason == "module not found"
 
     print("✓ PluginLoadError test passed.")
 
 
 def test_raise_plugin_registration_error() -> None:
-    """Verify PluginRegistrationError."""
+    """Verify PluginRegistrationError (alias for PluginAlreadyRegisteredError)."""
 
     try:
-        raise PluginRegistrationError("Plugin already registered.")
+        raise PluginRegistrationError("my_plugin")
     except PluginRegistrationError as exc:
-        assert str(exc) == "Plugin already registered."
+        assert "my_plugin" in str(exc)
+        assert exc.plugin_name == "my_plugin"
 
     print("✓ PluginRegistrationError test passed.")
 
@@ -51,9 +58,10 @@ def test_raise_plugin_validation_error() -> None:
     """Verify PluginValidationError."""
 
     try:
-        raise PluginValidationError("Invalid plugin.")
+        raise PluginValidationError("my_plugin", ["field_x is required"])
     except PluginValidationError as exc:
-        assert str(exc) == "Invalid plugin."
+        assert "my_plugin" in str(exc)
+        assert exc.plugin_name == "my_plugin"
 
     print("✓ PluginValidationError test passed.")
 
@@ -62,9 +70,11 @@ def test_raise_plugin_execution_error() -> None:
     """Verify PluginExecutionError."""
 
     try:
-        raise PluginExecutionError("Execution failed.")
+        raise PluginExecutionError("my_plugin", "step failed")
     except PluginExecutionError as exc:
-        assert str(exc) == "Execution failed."
+        assert "my_plugin" in str(exc)
+        assert exc.plugin_name == "my_plugin"
+        assert exc.reason == "step failed"
 
     print("✓ PluginExecutionError test passed.")
 
@@ -86,4 +96,4 @@ def run_tests() -> None:
 
 
 if __name__ == "__main__":
-    run_tests()
+    run_tests()

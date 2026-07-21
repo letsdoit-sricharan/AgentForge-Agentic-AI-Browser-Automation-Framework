@@ -138,15 +138,21 @@ class PluginResolver:
             return []
 
         resolutions = []
-        for plugin in plugins:
-            resolutions.append(
-                PluginResolution(
-                    plugin_name=plugin.metadata.name,
-                    found=True,
-                    plugin=plugin,
-                    capabilities=plugin.metadata.capabilities,
+        for plugin_name in plugins:
+            try:
+                plugin = self._registry.get(plugin_name)
+                resolutions.append(
+                    PluginResolution(
+                        plugin_name=plugin_name,
+                        found=True,
+                        plugin=plugin,
+                        capabilities=plugin.metadata.capabilities,
+                    )
                 )
-            )
+            except Exception as e:
+                self._logger.warning(
+                    f"Could not retrieve plugin '{plugin_name}': {e}"
+                )
 
         self._logger.info(
             f"Found {len(resolutions)} plugins with capability: {capability}"

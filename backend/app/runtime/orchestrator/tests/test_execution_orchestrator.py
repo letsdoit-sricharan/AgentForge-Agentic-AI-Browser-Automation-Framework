@@ -72,7 +72,7 @@ class TestExecutionOrchestrator:
         return ExecutionOrchestrator(plugin_manager)
 
     @pytest.fixture
-    def request(self):
+    def orchestrated_request(self):
         """Create an orchestrated request."""
         return OrchestratedRequest(
             plugin_name="test_plugin",
@@ -101,38 +101,36 @@ class TestExecutionOrchestrator:
             logger=None,
         )
 
-    @pytest.mark.asyncio
     async def test_execute_success(
-        self, orchestrator, request, mock_session, mock_page, plugin_context
+        self, orchestrator, orchestrated_request, mock_session, mock_page, plugin_context
     ):
         """Test successful execution."""
         result = await orchestrator.execute(
-            request=request,
+            request=orchestrated_request,
             session=mock_session,
             page=mock_page,
             plugin_context=plugin_context,
         )
 
         assert result.success is True
-        assert result.request_id == request.request_id
+        assert result.request_id == orchestrated_request.request_id
         assert result.plugin_name == "test_plugin"
         assert result.workflow_name == "test_workflow"
         assert result.errors == []
         assert result.execution_time is not None
         assert result.execution_time > 0
 
-    @pytest.mark.asyncio
     async def test_execute_plugin_not_found(
         self, orchestrator, mock_session, mock_page, plugin_context
     ):
         """Test execution with non-existent plugin."""
-        request = OrchestratedRequest(
+        req = OrchestratedRequest(
             plugin_name="nonexistent",
             workflow_name="test_workflow",
         )
 
         result = await orchestrator.execute(
-            request=request,
+            request=req,
             session=mock_session,
             page=mock_page,
             plugin_context=plugin_context,
@@ -142,18 +140,17 @@ class TestExecutionOrchestrator:
         assert len(result.errors) > 0
         assert "not found" in result.errors[0].lower()
 
-    @pytest.mark.asyncio
     async def test_execute_workflow_not_found(
         self, orchestrator, mock_session, mock_page, plugin_context
     ):
         """Test execution with non-existent workflow."""
-        request = OrchestratedRequest(
+        req = OrchestratedRequest(
             plugin_name="test_plugin",
             workflow_name="nonexistent_workflow",
         )
 
         result = await orchestrator.execute(
-            request=request,
+            request=req,
             session=mock_session,
             page=mock_page,
             plugin_context=plugin_context,

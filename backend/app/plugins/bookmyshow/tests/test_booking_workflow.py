@@ -11,6 +11,8 @@ from __future__ import annotations
 import asyncio
 from datetime import date
 
+import pytest
+
 from app.browser_engine.managers.browser_manager import BrowserManager
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins.bookmyshow.models.booking_request import BookingRequest
@@ -18,6 +20,7 @@ from app.plugins.bookmyshow.workflows.booking_workflow import BookingWorkflow
 from app.plugins.interfaces.plugin_context import PluginContext
 
 
+@pytest.mark.skip(reason="Integration test requiring network access and real browser")
 async def test_execute() -> None:
 
     browser = BrowserManager()

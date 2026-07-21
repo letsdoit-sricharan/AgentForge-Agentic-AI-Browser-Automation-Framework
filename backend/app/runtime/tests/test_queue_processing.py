@@ -19,8 +19,9 @@ def create_context(workflow: str) -> ExecutionContext:
 
     return ExecutionContext(
         request=ExecutionRequest(
+            plugin_context=None,
             plugin="bookmyshow",
-            workflow=workflow,
+            task=workflow,
         ),
         metadata=ExecutionMetadata(),
         execution_state=ExecutionState(
@@ -75,9 +76,9 @@ def test_queue_processing():
     second = queue.dequeue()
     third = queue.dequeue()
 
-    assert first.request.workflow == "workflow_1"
-    assert second.request.workflow == "workflow_2"
-    assert third.request.workflow == "workflow_3"
+    assert first.request.task == "workflow_1"
+    assert second.request.task == "workflow_2"
+    assert third.request.task == "workflow_3"
 
     print("\nFIFO order verified.")
 

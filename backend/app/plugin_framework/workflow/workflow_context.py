@@ -21,7 +21,7 @@ from typing import Any
 
 from app.browser_engine.interfaces.page import Page
 from app.browser_engine.interfaces.session import Session
-from app.plugins.interfaces.plugin_context import PluginContext
+from app.plugin_framework.plugin_context import PluginContext
 
 
 @dataclass

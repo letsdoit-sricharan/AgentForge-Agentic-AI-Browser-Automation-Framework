@@ -17,8 +17,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from app.plugin_framework.plugin_context import PluginContext
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
-from app.plugins.interfaces.plugin_context import PluginContext
 
 
 class Plugin(ABC):

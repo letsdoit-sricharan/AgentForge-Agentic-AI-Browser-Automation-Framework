@@ -19,7 +19,7 @@ Does NOT:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import KW_ONLY, dataclass, field
 from typing import Any
 from uuid import uuid4
 
@@ -38,7 +38,16 @@ class Task(ABC):
         - PurchaseTicketTask: Complete payment
         - SearchProductTask: Find product on e-commerce site
         - AddToCartTask: Add item to cart
+
+    Design note:
+        All fields below the KW_ONLY sentinel are keyword-only.
+        This allows concrete subclasses to define their own required
+        positional fields without hitting the Python restriction that
+        non-default arguments cannot follow default arguments in a
+        dataclass inheritance chain.
     """
+
+    _: KW_ONLY
 
     # Task metadata
     task_id: str = field(default_factory=lambda: str(uuid4()))

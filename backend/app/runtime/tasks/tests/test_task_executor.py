@@ -125,6 +125,8 @@ class TestTaskExecution:
         # Mock orchestrator response
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=True,
             output={"result": "success"},
             errors=[],
@@ -220,6 +222,8 @@ class TestTaskExecution:
         # Mock orchestrator failure
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=False,
             output={},
             errors=["Orchestration failed"],
@@ -262,6 +266,8 @@ class TestPluginResolution:
         # Mock orchestrator
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=True,
             output={},
             errors=[],
@@ -298,6 +304,8 @@ class TestPluginResolution:
         # Mock orchestrator
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=True,
             output={},
             errors=[],
@@ -337,6 +345,8 @@ class TestPluginResolution:
         # Mock orchestrator
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=True,
             output={},
             errors=[],
@@ -399,6 +409,8 @@ class TestTaskResultConversion:
         output = {"data": "result", "count": 42}
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=True,
             output=output,
             errors=[],
@@ -438,6 +450,8 @@ class TestTaskResultConversion:
         errors = ["Error 1", "Error 2"]
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=False,
             output={},
             errors=errors,
@@ -483,6 +497,8 @@ class TestTaskContextCreation:
         
         orchestrated_result = OrchestratedResult(
             request_id=task.task_id,
+            plugin_name='test_plugin',
+            workflow_name='test_task_workflow',
             success=True,
             output={},
             errors=[],

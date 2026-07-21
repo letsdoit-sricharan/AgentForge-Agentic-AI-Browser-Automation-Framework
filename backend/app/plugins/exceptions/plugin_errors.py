@@ -34,6 +34,10 @@ class PluginAlreadyRegisteredError(PluginError):
         super().__init__(f"Plugin already registered: {plugin_name}")
 
 
+# Backward-compatible alias — prefer PluginAlreadyRegisteredError in new code.
+PluginRegistrationError = PluginAlreadyRegisteredError
+
+
 class PluginLoadError(PluginError):
     """Raised when a plugin fails to load."""
 

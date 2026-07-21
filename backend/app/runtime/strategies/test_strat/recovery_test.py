@@ -17,8 +17,9 @@ from app.runtime.strategies.recovery_strategy import (
 def create_context() -> ExecutionContext:
     context = ExecutionContext(
         request=ExecutionRequest(
+            plugin_context=None,
             plugin="bookmyshow",
-            workflow="book_ticket",
+            task="book_ticket",
         ),
         metadata=ExecutionMetadata(),
         execution_state=ExecutionState("exec-1"),

@@ -12,7 +12,7 @@ from app.plugins.interfaces import (
 )
 from app.plugins.models import (
     ManagedPlugin,
-    PluginState,
+    PluginStatus,
 )
 
 
@@ -30,7 +30,7 @@ class DummyPlugin(Plugin):
     def initialize(self, context: PluginContext):
         pass
 
-    def execute(self, task):
+    async def execute(self, task):
         return task
 
     def shutdown(self):
@@ -43,7 +43,8 @@ def test_default_values():
         plugin=DummyPlugin()
     )
 
-    assert managed.state == PluginState.CREATED
+    # ManagedPlugin uses .status (PluginStatus), not .state (PluginState)
+    assert managed.status == PluginStatus.UNLOADED
 
     assert managed.execution_count == 0
 
@@ -75,9 +76,10 @@ def test_state_update():
         DummyPlugin()
     )
 
-    managed.state = PluginState.RUNNING
+    # Status transitions use .status, and PluginStatus enum (not PluginState)
+    managed.status = PluginStatus.READY
 
-    assert managed.state == PluginState.RUNNING
+    assert managed.status == PluginStatus.READY
 
     print("✓ State update test passed.")
 
@@ -114,4 +116,4 @@ def run_tests():
 
 
 if __name__ == "__main__":
-    run_tests()
+    run_tests()

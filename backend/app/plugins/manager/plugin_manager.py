@@ -321,7 +321,8 @@ class PluginManager:
         Returns:
             List of plugins with the capability
         """
-        return self._registry.find_by_capability(capability)
+        plugin_names = self._registry.find_by_capability(capability)
+        return [self._registry.get(name) for name in plugin_names]
 
     def get_all_plugin_states(self) -> dict[str, PluginState]:
         """

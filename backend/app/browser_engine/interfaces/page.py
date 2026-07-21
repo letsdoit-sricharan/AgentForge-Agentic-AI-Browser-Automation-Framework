@@ -16,7 +16,6 @@ Must NOT do:
 """
 
 from __future__ import annotations
-from pathlib import Path
 
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -300,14 +299,6 @@ class Page(ABC):
     ) -> None:
         """
         Upload a file using the specified file input selector.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    async def expect_download(self) -> Path:
-        """
-        Wait for the next download and return the
-        downloaded file path.
         """
         raise NotImplementedError
 
