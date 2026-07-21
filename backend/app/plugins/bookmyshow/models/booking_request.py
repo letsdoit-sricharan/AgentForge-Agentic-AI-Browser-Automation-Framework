@@ -20,7 +20,7 @@ from datetime import date
 from typing import Optional
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class BookingRequest:
     """
     Represents a movie ticket booking request.

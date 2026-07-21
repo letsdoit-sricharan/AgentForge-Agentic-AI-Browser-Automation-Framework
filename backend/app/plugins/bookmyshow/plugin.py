@@ -3,19 +3,18 @@ Purpose:
     BookMyShow plugin implementation.
 
 Responsibilities:
-    - Accept booking requests.
     - Execute the BookMyShow booking workflow.
-    - Return a structured booking result.
+    - Validate the workflow input.
+    - Return a structured workflow result.
 
 Does NOT:
-    - Perform browser automation directly.
+    - Create WorkflowContext objects.
+    - Manage browser lifecycle.
     - Import Playwright.
-    - Contain page-specific logic.
+    - Contain browser automation logic.
 """
 
 from __future__ import annotations
-
-from typing import Any
 
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins.interfaces.plugin import Plugin
@@ -53,10 +52,10 @@ class BookMyShowPlugin(Plugin):
 
     async def execute(
         self,
-        task: Any,
-    ) -> Any:
+        context: WorkflowContext,
+    ):
         """
-        Execute a booking request.
+        Execute the booking workflow.
         """
 
         if self._context is None:
@@ -64,20 +63,20 @@ class BookMyShowPlugin(Plugin):
                 "Plugin has not been initialized."
             )
 
-        if not isinstance(task, BookingRequest):
+        request = context.input_data.get(
+            "booking_request",
+        )
+
+        if not isinstance(
+            request,
+            BookingRequest,
+        ):
             raise TypeError(
                 "Expected BookingRequest."
             )
 
-        workflow_context = WorkflowContext(
-            plugin_context=self._context,
-            input_data={
-                "booking_request": task,
-            },
-        )
-
         return await self._workflow.execute(
-            workflow_context,
+            context,
         )
 
     def shutdown(self) -> None:

@@ -14,7 +14,7 @@ from app.actions.exceptions import ActionExecutionError
 from app.browser_engine.interfaces.page import Page
 
 
-@dataclass(slots=True)
+@dataclass
 class DragAction(BaseAction):
     """
     Reusable mouse drag action.

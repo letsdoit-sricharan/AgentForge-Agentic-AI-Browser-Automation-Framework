@@ -1,88 +1,102 @@
 """
 Tests for PluginMetadata.
-
-Run:
-    python -m app.plugins.tests.test_plugin_metadata
 """
 
-from dataclasses import FrozenInstanceError
+import pytest
 
 from app.plugins.interfaces import PluginMetadata
 
 
-def test_plugin_metadata_creation() -> None:
-    """Verify that metadata is created correctly."""
+class TestPluginMetadata:
+    """Tests for PluginMetadata."""
 
-    metadata = PluginMetadata(
-        name="bookmyshow",
-        version="1.0.0",
-        description="Movie ticket booking automation",
-        author="AgentForge",
-        capabilities=(
-            "movie_search",
-            "seat_selection",
-            "ticket_booking",
-        ),
-    )
+    def test_create_metadata(self):
+        """Test creating plugin metadata."""
+        metadata = PluginMetadata(
+            name="test_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+        )
 
-    assert metadata.name == "bookmyshow"
-    assert metadata.version == "1.0.0"
-    assert metadata.description == "Movie ticket booking automation"
-    assert metadata.author == "AgentForge"
-    assert len(metadata.capabilities) == 3
+        assert metadata.name == "test_plugin"
+        assert metadata.version == "1.0.0"
+        assert metadata.description == "A test plugin"
+        assert metadata.author == "Test Author"
+        assert metadata.capabilities == ()
+        assert metadata.homepage is None
 
-    print("✓ Plugin metadata creation test passed.")
+    def test_create_metadata_with_capabilities(self):
+        """Test creating metadata with capabilities."""
+        metadata = PluginMetadata(
+            name="test_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+            capabilities=("booking", "search", "payment"),
+        )
 
+        assert len(metadata.capabilities) == 3
+        assert "booking" in metadata.capabilities
+        assert "search" in metadata.capabilities
+        assert "payment" in metadata.capabilities
 
-def test_plugin_metadata_defaults() -> None:
-    """Verify default values."""
+    def test_create_metadata_with_homepage(self):
+        """Test creating metadata with homepage."""
+        metadata = PluginMetadata(
+            name="test_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+            homepage="https://example.com",
+        )
 
-    metadata = PluginMetadata(
-        name="dummy",
-        version="0.1.0",
-        description="Dummy plugin",
-        author="AgentForge",
-    )
+        assert metadata.homepage == "https://example.com"
 
-    assert metadata.capabilities == ()
-    assert metadata.homepage is None
+    def test_metadata_is_immutable(self):
+        """Test that metadata is immutable (frozen dataclass)."""
+        metadata = PluginMetadata(
+            name="test_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+        )
 
-    print("✓ Plugin metadata default values test passed.")
+        with pytest.raises(AttributeError):
+            metadata.name = "new_name"
 
+    def test_metadata_equality(self):
+        """Test metadata equality comparison."""
+        metadata1 = PluginMetadata(
+            name="test_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+        )
 
-def test_plugin_metadata_immutable() -> None:
-    """Verify metadata is immutable."""
+        metadata2 = PluginMetadata(
+            name="test_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+        )
 
-    metadata = PluginMetadata(
-        name="dummy",
-        version="0.1.0",
-        description="Dummy plugin",
-        author="AgentForge",
-    )
+        assert metadata1 == metadata2
 
-    try:
-        metadata.name = "changed"
-    except FrozenInstanceError:
-        print("✓ Plugin metadata immutability test passed.")
-    else:
-        raise AssertionError("PluginMetadata should be immutable.")
+    def test_metadata_inequality(self):
+        """Test metadata inequality comparison."""
+        metadata1 = PluginMetadata(
+            name="test_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+        )
 
+        metadata2 = PluginMetadata(
+            name="different_plugin",
+            version="1.0.0",
+            description="A test plugin",
+            author="Test Author",
+        )
 
-def run_tests() -> None:
-    """Execute all PluginMetadata tests."""
-
-    print("\n" + "=" * 60)
-    print("Running PluginMetadata Tests")
-    print("=" * 60)
-
-    test_plugin_metadata_creation()
-    test_plugin_metadata_defaults()
-    test_plugin_metadata_immutable()
-
-    print("-" * 60)
-    print("✅ All PluginMetadata tests passed successfully!")
-    print("=" * 60)
-
-
-if __name__ == "__main__":
-    run_tests()
+        assert metadata1 != metadata2

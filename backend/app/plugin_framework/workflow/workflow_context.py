@@ -24,7 +24,7 @@ from app.browser_engine.interfaces.session import Session
 from app.plugins.interfaces.plugin_context import PluginContext
 
 
-@dataclass(slots=True)
+@dataclass
 class WorkflowContext:
     """
     Context passed to every workflow execution.

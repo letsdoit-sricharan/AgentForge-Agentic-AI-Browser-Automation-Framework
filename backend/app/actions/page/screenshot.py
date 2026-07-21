@@ -16,7 +16,7 @@ from app.browser_engine.interfaces.page import Page
 from app.browser_engine.models.screenshot_options import ScreenshotOptions
 
 
-@dataclass(slots=True)
+@dataclass
 class ScreenshotAction(BaseAction):
     """
     Reusable screenshot action.

@@ -15,7 +15,7 @@ from app.browser_engine.interfaces.locator import Locator
 from app.browser_engine.interfaces.page import Page
 
 
-@dataclass(slots=True)
+@dataclass
 class ScrollIntoViewAction(BaseAction):
     """
     Reusable action for scrolling an element

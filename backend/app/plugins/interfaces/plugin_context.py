@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from typing import Any
 
 
-@dataclass(slots=True)
+@dataclass
 class PluginContext:
     """
     Context object supplied to every plugin.

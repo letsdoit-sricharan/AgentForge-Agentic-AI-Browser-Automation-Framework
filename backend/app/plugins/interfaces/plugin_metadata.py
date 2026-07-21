@@ -17,7 +17,7 @@ Does NOT:
 from dataclasses import dataclass, field
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class PluginMetadata:
     """
     Immutable metadata describing a plugin.

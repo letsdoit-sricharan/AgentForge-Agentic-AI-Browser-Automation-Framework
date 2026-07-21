@@ -1,43 +1,80 @@
 """
 Purpose:
-    Defines the UI contract for the BookMyShow movie page.
+    Represents the BookMyShow movie search page.
 
 Responsibilities:
-    - Store locator constants for movie search and selection.
-    - Provide a centralized source for movie page selectors.
+    - Store selectors for searching and selecting movies.
+    - Act as the Page Object for movie-related interactions.
 
 Does NOT:
-    - Perform browser automation.
+    - Execute workflow logic.
     - Import Playwright.
-    - Execute browser actions.
+    - Perform browser automation directly.
 """
 
 from __future__ import annotations
 
-from typing import ClassVar
+from app.actions.element import ClickAction, FillAction
+from app.plugin_framework.pages import BasePage
 
-from app.plugins.bookmyshow.pages.base_page import PageLocators
 
-
-class MoviePage(PageLocators):
+class MoviePage(BasePage):
     """
-    BookMyShow movie page definitions.
+    Page Object representing the movie search page.
     """
 
-    URL: ClassVar[str] = ""
+    SEARCH_BOX = 'input[placeholder*="Search"]'
 
-    # Search
-    SEARCH_BOX: ClassVar[str] = "search_box"
-    SEARCH_RESULTS: ClassVar[str] = "search_results"
+    async def search_movie(
+        self,
+        movie: str,
+    ) -> None:
+        """
+        Search for a movie.
+        """
 
-    # Movie listings
-    MOVIE_CARD: ClassVar[str] = "movie_card"
-    MOVIE_TITLE: ClassVar[str] = "movie_title"
-    MOVIE_POSTER: ClassVar[str] = "movie_poster"
+        search_box = self.page.locator(
+            self.SEARCH_BOX,
+        )
 
-    # Show dates
-    DATE_SELECTOR: ClassVar[str] = "date_selector"
-    AVAILABLE_DATES: ClassVar[str] = "available_dates"
+        await FillAction(
+            locator=search_box,
+            text=movie,
+        ).execute(
+            self.page,
+        )
 
-    # Continue
-    BOOK_TICKETS_BUTTON: ClassVar[str] = "book_tickets_button"
+    async def select_movie(
+        self,
+        movie: str,
+    ) -> None:
+        """
+        Select a movie from the search results.
+        """
+
+        movie_locator = self.page.locator(
+            f"text={movie}",
+        )
+
+        await movie_locator.wait()
+
+        await ClickAction(
+            locator=movie_locator,
+        ).execute(
+            self.page,
+        )
+
+    async def verify_movie_selected(
+        self,
+        movie: str,
+    ) -> bool:
+        """
+        Verify that the selected movie page is displayed.
+        """
+
+        try:
+
+            return movie.lower() in self.page.url.lower()
+
+        except Exception:
+            return False

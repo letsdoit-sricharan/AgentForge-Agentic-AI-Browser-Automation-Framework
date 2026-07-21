@@ -1,38 +1,38 @@
 """
 Purpose:
-    Defines the base contract for all AgentForge plugins.
+    Defines the base interface implemented by all AgentForge plugins.
 
 Responsibilities:
-    - Define the plugin lifecycle.
     - Expose immutable plugin metadata.
-    - Provide a common execution interface.
+    - Support initialization and shutdown.
+    - Execute workflows using a WorkflowContext.
 
 Does NOT:
-    - Implement website-specific logic.
-    - Access browser internals.
-    - Execute browser actions directly.
+    - Manage browser lifecycle.
+    - Create WorkflowContext instances.
+    - Import Playwright.
 """
 
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
 
-from .plugin_context import PluginContext
-from .plugin_metadata import PluginMetadata
+from app.plugin_framework.workflow.workflow_context import WorkflowContext
+from app.plugins.interfaces.plugin_context import PluginContext
 
 
 class Plugin(ABC):
     """
-    Base interface that every AgentForge plugin must implement.
+    Base interface implemented by every AgentForge plugin.
     """
 
     @property
     @abstractmethod
-    def metadata(self) -> PluginMetadata:
+    def metadata(self):
         """
-        Return immutable metadata describing the plugin.
+        Return immutable plugin metadata.
         """
+        raise NotImplementedError
 
     @abstractmethod
     def initialize(
@@ -40,20 +40,23 @@ class Plugin(ABC):
         context: PluginContext,
     ) -> None:
         """
-        Initialize the plugin before execution.
+        Initialize the plugin.
         """
+        raise NotImplementedError
 
     @abstractmethod
     async def execute(
         self,
-        task: Any,
-    ) -> Any:
+        context: WorkflowContext,
+    ):
         """
-        Execute a plugin-specific task.
+        Execute the plugin using the supplied workflow context.
         """
+        raise NotImplementedError
 
     @abstractmethod
     def shutdown(self) -> None:
         """
-        Release any resources held by the plugin.
+        Shutdown the plugin.
         """
+        raise NotImplementedError

@@ -21,7 +21,7 @@ from app.plugin_framework.models.workflow_status import WorkflowStatus
 from app.plugin_framework.workflow.workflow_result import WorkflowResult
 
 
-@dataclass(slots=True)
+@dataclass
 class ExecutionResult:
     """
     Represents the framework-level execution result of a workflow.

@@ -1,92 +1,191 @@
 """
 Purpose:
-    Maintains the registry of all managed plugins.
+    Centralized registry for all loaded plugins.
 
 Responsibilities:
-    - Register plugins.
-    - Remove plugins.
-    - Retrieve managed plugins.
-    - List registered plugins.
+    - Register and unregister plugins.
+    - Track plugin instances and metadata.
+    - Provide plugin lookup by name.
+    - Validate plugin uniqueness.
 
 Does NOT:
-    - Load plugins.
+    - Load plugins from disk.
+    - Initialize plugins.
     - Execute plugins.
-    - Manage plugin lifecycle.
+    - Manage plugin lifecycle state.
 """
 
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import TYPE_CHECKING
 
-from app.plugins.exceptions import PluginRegistrationError
-from app.plugins.interfaces import Plugin
-from app.plugins.models import ManagedPlugin
+from app.plugins.exceptions import (
+    PluginAlreadyRegisteredError,
+    PluginNotFoundError,
+)
+
+if TYPE_CHECKING:
+    from app.plugins.interfaces import Plugin, PluginMetadata
 
 
 class PluginRegistry:
     """
-    Stores all registered plugins as ManagedPlugin instances.
+    Central registry for AgentForge plugins.
     """
 
     def __init__(self) -> None:
-        self._plugins: Dict[str, ManagedPlugin] = {}
+        self._plugins: dict[str, Plugin] = {}
+        self._metadata: dict[str, PluginMetadata] = {}
 
-    def register(self, plugin: Plugin) -> ManagedPlugin:
+    def register(
+        self,
+        plugin: Plugin,
+    ) -> None:
         """
-        Register a plugin.
+        Register a plugin instance.
 
-        Returns the created ManagedPlugin.
+        Args:
+            plugin: Plugin instance to register.
+
+        Raises:
+            PluginAlreadyRegisteredError: If plugin name already exists.
         """
+        metadata = plugin.metadata
+        plugin_name = metadata.name
 
-        name = plugin.metadata.name
+        if plugin_name in self._plugins:
+            raise PluginAlreadyRegisteredError(plugin_name)
 
-        if name in self._plugins:
-            raise PluginRegistrationError(
-                f"Plugin '{name}' is already registered."
-            )
+        self._plugins[plugin_name] = plugin
+        self._metadata[plugin_name] = metadata
 
-        managed = ManagedPlugin(plugin=plugin)
-
-        self._plugins[name] = managed
-
-        return managed
-
-    def unregister(self, name: str) -> None:
+    def unregister(
+        self,
+        plugin_name: str,
+    ) -> None:
         """
-        Remove a plugin.
-        """
+        Unregister a plugin by name.
 
-        self._plugins.pop(name, None)
+        Args:
+            plugin_name: Name of the plugin to unregister.
 
-    def get(self, name: str) -> ManagedPlugin:
+        Raises:
+            PluginNotFoundError: If plugin does not exist.
         """
-        Retrieve a managed plugin.
-        """
+        if plugin_name not in self._plugins:
+            raise PluginNotFoundError(plugin_name)
 
-        try:
-            return self._plugins[name]
-        except KeyError as exc:
-            raise PluginRegistrationError(
-                f"Plugin '{name}' is not registered."
-            ) from exc
+        del self._plugins[plugin_name]
+        del self._metadata[plugin_name]
 
-    def exists(self, name: str) -> bool:
+    def get(
+        self,
+        plugin_name: str,
+    ) -> Plugin:
         """
-        Check if a plugin exists.
-        """
+        Retrieve a plugin by name.
 
-        return name in self._plugins
+        Args:
+            plugin_name: Name of the plugin.
 
-    def list_plugins(self) -> List[str]:
-        """
-        Return registered plugin names.
-        """
+        Returns:
+            Plugin instance.
 
-        return sorted(self._plugins.keys())
+        Raises:
+            PluginNotFoundError: If plugin does not exist.
+        """
+        if plugin_name not in self._plugins:
+            raise PluginNotFoundError(plugin_name)
+
+        return self._plugins[plugin_name]
+
+    def get_metadata(
+        self,
+        plugin_name: str,
+    ) -> PluginMetadata:
+        """
+        Retrieve plugin metadata by name.
+
+        Args:
+            plugin_name: Name of the plugin.
+
+        Returns:
+            PluginMetadata instance.
+
+        Raises:
+            PluginNotFoundError: If plugin does not exist.
+        """
+        if plugin_name not in self._metadata:
+            raise PluginNotFoundError(plugin_name)
+
+        return self._metadata[plugin_name]
+
+    def has_plugin(
+        self,
+        plugin_name: str,
+    ) -> bool:
+        """
+        Check if a plugin is registered.
+
+        Args:
+            plugin_name: Name of the plugin.
+
+        Returns:
+            True if plugin exists, False otherwise.
+        """
+        return plugin_name in self._plugins
+
+    def list_plugins(self) -> list[str]:
+        """
+        List all registered plugin names.
+
+        Returns:
+            List of plugin names.
+        """
+        return list(self._plugins.keys())
+
+    def list_metadata(self) -> list[PluginMetadata]:
+        """
+        List all registered plugin metadata.
+
+        Returns:
+            List of PluginMetadata instances.
+        """
+        return list(self._metadata.values())
+
+    def find_by_capability(
+        self,
+        capability: str,
+    ) -> list[str]:
+        """
+        Find all plugins supporting a specific capability.
+
+        Args:
+            capability: Capability to search for.
+
+        Returns:
+            List of plugin names supporting the capability.
+        """
+        return [
+            name
+            for name, metadata in self._metadata.items()
+            if capability in metadata.capabilities
+        ]
 
     def clear(self) -> None:
         """
-        Remove every registered plugin.
-        """
+        Clear all registered plugins.
 
+        Use with caution - typically only for testing.
+        """
         self._plugins.clear()
+        self._metadata.clear()
+
+    def count(self) -> int:
+        """
+        Return the number of registered plugins.
+
+        Returns:
+            Number of registered plugins.
+        """
+        return len(self._plugins)

@@ -21,7 +21,7 @@ from datetime import date
 from app.plugins.bookmyshow.models.theatre import Theatre
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Show:
     """
     Represents a movie show.

@@ -1,6 +1,8 @@
-from .plugin import Plugin
-from .plugin_context import PluginContext
-from .plugin_metadata import PluginMetadata
+"""Plugin interfaces."""
+
+from app.plugins.interfaces.plugin import Plugin
+from app.plugins.interfaces.plugin_context import PluginContext
+from app.plugins.interfaces.plugin_metadata import PluginMetadata
 
 __all__ = [
     "Plugin",

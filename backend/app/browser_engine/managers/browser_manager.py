@@ -137,9 +137,9 @@ class BrowserManager:
                     "Browser has already been stopped."
                 )
 
-        raise BrowserLaunchError(
-            "Browser has not been started."
-        )
+            raise BrowserLaunchError(
+                "Browser has not been started."
+            )
 
         return self._browser
 

@@ -15,7 +15,7 @@ from app.browser_engine.interfaces.page import Page
 from app.browser_engine.models.load_state import LoadState
 
 
-@dataclass()
+@dataclass
 class WaitAction(BaseAction):
     """
     Wait for the page to reach a specific load state.
@@ -23,7 +23,7 @@ class WaitAction(BaseAction):
 
     load_state: LoadState = LoadState.LOAD
 
-    timeout: float | None = None
+    timeout: int | None = None
 
     async def execute(
         self,
@@ -34,9 +34,9 @@ class WaitAction(BaseAction):
         """
 
         try:
-            await page.wait_for_load_state(
-                self.load_state,
-                self.timeout,
+            await page.wait_for_load(
+                state=self.load_state,
+                timeout=self.timeout,
             )
 
         except Exception as exc:

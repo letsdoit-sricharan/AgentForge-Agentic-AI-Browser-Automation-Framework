@@ -25,7 +25,7 @@ _SHORTCUTS: dict[str, tuple[str, ...]] = {
 }
 
 
-@dataclass(slots=True)
+@dataclass
 class ShortcutAction(BaseAction):
     """
     Execute a named keyboard shortcut.

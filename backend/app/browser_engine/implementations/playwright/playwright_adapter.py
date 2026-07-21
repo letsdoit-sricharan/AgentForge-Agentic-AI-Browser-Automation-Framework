@@ -99,6 +99,12 @@ class PlaywrightAdapter:
             browser = await self._playwright.chromium.launch(
                 headless=options.headless,
                 slow_mo=options.slow_mo,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                ],
             )
 
             return browser

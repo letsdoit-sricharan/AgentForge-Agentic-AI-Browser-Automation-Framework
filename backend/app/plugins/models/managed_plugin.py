@@ -20,10 +20,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 
 from app.plugins.interfaces import Plugin, PluginContext
-from app.plugins.models.plugin_state import PluginState
+from app.plugins.models.plugin_state import PluginStatus
 
 
-@dataclass(slots=True)
+@dataclass
 class ManagedPlugin:
     """
     Represents a plugin managed by the Plugin Infrastructure.
@@ -31,7 +31,7 @@ class ManagedPlugin:
 
     plugin: Plugin
 
-    state: PluginState = PluginState.CREATED
+    status: PluginStatus = PluginStatus.UNLOADED
 
     context: PluginContext | None = None
 

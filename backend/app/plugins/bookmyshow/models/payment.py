@@ -32,7 +32,7 @@ class PaymentStatus(Enum):
     CANCELLED = "cancelled"
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Payment:
     """
     Represents payment information for a booking.

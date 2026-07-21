@@ -1,83 +1,70 @@
 """
-Tests for OpenHomepageStep.
+Integration test for OpenHomepageStep.
 
 Run:
-    python -m app.plugins.bookmyshow.tests.test_open_homepage_step
+
+python -m app.plugins.bookmyshow.tests.test_open_homepage_step
 """
 
 from __future__ import annotations
 
 import asyncio
 
-from app.plugin_framework.workflow.workflow_context import WorkflowContext
+from app.browser_engine.managers.browser_manager import BrowserManager
 from app.plugins.bookmyshow.steps.open_homepage import OpenHomepageStep
+from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins.interfaces.plugin_context import PluginContext
 
 
-class DummyLocator:
-    async def wait(self, timeout=None):
-        return None
+async def test_execute() -> None:
 
-    async def is_visible(self):
-        return True
+    browser = BrowserManager()
 
+    await browser.start()
 
-class DummyPage:
-    async def goto(self, *args, **kwargs):
-        return None
+    try:
+        session = await browser.create_session()
 
-    async def wait_for_load(self, *args, **kwargs):
-        return None
+        page = await session.new_page()
 
-    def locator(self, selector):
-        return DummyLocator()
+        plugin_context = PluginContext(
+            runtime=None,
+            actions=None,
+            memory=None,
+            configuration=None,
+            logger=None,
+        )
 
-    async def title(self):
-        return "BookMyShow"
+        context = WorkflowContext(
+            plugin_context=plugin_context,
+            page=page,
+            session=session.session,
+        )
 
-    @property
-    def url(self):
-        return "https://in.bookmyshow.com/explore/home"
+        step = OpenHomepageStep()
 
+        result = await step.execute(context)
 
-class DummySession:
-    pass
+        print(result.message)
 
+        assert result.success is True
 
-async def test_execute():
+        print("[PASS] OpenHomepageStep integration test passed.")
 
-    plugin_context = PluginContext(
-        runtime=None,
-        actions=None,
-        memory=None,
-        configuration=None,
-        logger=None,
-    )
-
-    context = WorkflowContext(
-        plugin_context=plugin_context,
-        page=DummyPage(),
-        session=DummySession(),
-    )
-
-    step = OpenHomepageStep()
-
-    result = await step.execute(context)
-
-    assert result.success
-    print("✓ OpenHomepageStep execution test passed.")
+    finally:
+        await browser.stop()
 
 
-async def run_tests():
+async def run_tests() -> None:
 
     print("\n" + "=" * 65)
-    print("OpenHomepageStep Tests")
+    print("OpenHomepageStep Integration Test")
     print("=" * 65)
 
     await test_execute()
 
     print("-" * 65)
-    print("✅ All OpenHomepageStep tests passed!")
+    print("[PASS] Integration test passed!")
     print("=" * 65)
 
 

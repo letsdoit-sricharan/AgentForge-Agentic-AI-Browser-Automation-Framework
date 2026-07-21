@@ -46,6 +46,7 @@ class PlaywrightBrowser(Browser):
         """
         self._adapter = adapter
         self._browser: PlaywrightBrowserInstance | None = None
+        self._options: BrowserOptions | None = None
 
     async def launch(
         self,
@@ -60,6 +61,7 @@ class PlaywrightBrowser(Browser):
         """
         await self._adapter.start()
         self._browser = await self._adapter.launch_browser(options)
+        self._options = options
 
     async def close(self) -> None:
         """
@@ -83,7 +85,19 @@ class PlaywrightBrowser(Browser):
                 "Browser has not been launched."
             )
 
-        context = await self._browser.new_context()
+        context_kwargs: dict = {}
+
+        if self._options is not None:
+            if self._options.user_agent is not None:
+                context_kwargs["user_agent"] = self._options.user_agent
+
+            vp = self._options.viewport
+            context_kwargs["viewport"] = {
+                "width": vp.width,
+                "height": vp.height,
+            }
+
+        context = await self._browser.new_context(**context_kwargs)
 
         return PlaywrightSession(context)
 

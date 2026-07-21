@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-@dataclass(slots=True)
+@dataclass
 class StepResult:
     """
     Represents the outcome of a workflow step.

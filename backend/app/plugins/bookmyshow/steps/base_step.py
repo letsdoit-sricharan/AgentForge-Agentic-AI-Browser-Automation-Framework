@@ -3,9 +3,9 @@ Purpose:
     Defines the reusable base class for all BookMyShow workflow steps.
 
 Responsibilities:
-    - Provide common placeholder execution logic.
-    - Enforce a consistent step interface.
-    - Reduce duplicate code across workflow steps.
+    - Provide common execution flow.
+    - Standardize success/error handling.
+    - Reduce duplicate code.
 
 Does NOT:
     - Perform browser automation.
@@ -34,18 +34,37 @@ class BaseBookMyShowStep(WorkflowStep):
         Message returned when the step succeeds.
         """
 
+    @abstractmethod
+    async def perform(
+        self,
+        context: WorkflowContext,
+    ) -> None:
+        """
+        Perform the actual step logic.
+        """
+
     async def execute(
         self,
         context: WorkflowContext,
     ) -> StepResult:
         """
         Execute the workflow step.
-
-        Version 1.0:
-        Returns a successful placeholder result.
         """
 
-        return StepResult(
-            success=True,
-            message=self.success_message,
-        )
+        try:
+
+            await self.perform(
+                context,
+            )
+
+            return StepResult(
+                success=True,
+                message=self.success_message,
+            )
+
+        except Exception as exc:
+
+            return StepResult(
+                success=False,
+                message=str(exc),
+            )

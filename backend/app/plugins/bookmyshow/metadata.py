@@ -15,7 +15,7 @@ Does NOT:
 
 from __future__ import annotations
 
-from app.plugins.interfaces import PluginMetadata
+from app.plugins.interfaces.plugin_metadata import PluginMetadata
 
 
 BOOKMYSHOW_METADATA = PluginMetadata(
@@ -31,3 +31,6 @@ BOOKMYSHOW_METADATA = PluginMetadata(
         "ticket_download",
     ),
 )
+
+# Alias for backwards compatibility
+METADATA = BOOKMYSHOW_METADATA

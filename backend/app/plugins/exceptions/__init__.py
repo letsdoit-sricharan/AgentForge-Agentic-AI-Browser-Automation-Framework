@@ -1,15 +1,25 @@
-from .plugin_errors import (
+"""Plugin exceptions."""
+
+from app.plugins.exceptions.plugin_errors import (
+    PluginAlreadyRegisteredError,
+    PluginDependencyError,
     PluginError,
     PluginExecutionError,
+    PluginInitializationError,
     PluginLoadError,
-    PluginRegistrationError,
+    PluginNotFoundError,
+    PluginStateError,
     PluginValidationError,
 )
 
 __all__ = [
     "PluginError",
+    "PluginNotFoundError",
+    "PluginAlreadyRegisteredError",
     "PluginLoadError",
-    "PluginRegistrationError",
-    "PluginValidationError",
+    "PluginInitializationError",
     "PluginExecutionError",
+    "PluginValidationError",
+    "PluginStateError",
+    "PluginDependencyError",
 ]

@@ -1,5 +1,5 @@
-from .plugin_registry import PluginRegistry
+"""Plugin registry."""
 
-__all__ = [
-    "PluginRegistry",
-]
+from app.plugins.registry.plugin_registry import PluginRegistry
+
+__all__ = ["PluginRegistry"]

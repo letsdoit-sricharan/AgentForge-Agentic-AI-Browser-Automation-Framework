@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class BookingResult:
     """
     Represents the outcome of a movie ticket booking.

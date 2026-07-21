@@ -1,166 +1,122 @@
 """
 Tests for PluginManager.
-
-Run:
-    python -m app.plugins.tests.test_plugin_manager
 """
 
-from app.plugins.interfaces import (
-    Plugin,
-    PluginContext,
-    PluginMetadata,
+import pytest
+
+from app.plugins import (
+    PluginManager,
+    PluginNotFoundError,
+    PluginStateError,
+    PluginStatus,
 )
-from app.plugins.manager import PluginManager
-from app.plugins.models import PluginState
-from app.plugins.registry import PluginRegistry
+from app.plugins.interfaces import PluginContext
 
 
-class DummyPlugin(Plugin):
+class TestPluginManager:
+    """Tests for PluginManager."""
 
-    def __init__(self):
-        self.initialized = False
-        self.shutdown_called = False
+    @pytest.fixture
+    def manager(self):
+        """Create a plugin manager instance."""
+        return PluginManager()
 
-    @property
-    def metadata(self):
-        return PluginMetadata(
-            name="dummy",
-            version="1.0.0",
-            description="Dummy Plugin",
-            author="AgentForge",
+    @pytest.fixture
+    def plugin_context(self):
+        """Create a mock plugin context."""
+        return PluginContext(
+            runtime=None,
+            actions=None,
+            memory=None,
+            configuration=None,
+            logger=None,
         )
 
-    def initialize(self, context):
-        self.initialized = True
+    def test_load_plugin(self, manager):
+        """Test loading a plugin."""
+        manager.load_plugin("bookmyshow")
 
-    def execute(self, task):
-        return f"Executed {task}"
+        assert manager.registry.has_plugin("bookmyshow")
+        state = manager.get_plugin_state("bookmyshow")
+        assert state.status == PluginStatus.LOADED
 
-    def shutdown(self):
-        self.shutdown_called = True
+    def test_load_all_plugins(self, manager):
+        """Test loading all plugins."""
+        results = manager.load_all_plugins()
 
+        assert isinstance(results, dict)
+        assert "bookmyshow" in results
+        assert results["bookmyshow"] is True
 
-def create_manager():
+    def test_initialize_plugin(self, manager, plugin_context):
+        """Test initializing a plugin."""
+        manager.load_plugin("bookmyshow")
+        manager.initialize_plugin("bookmyshow", plugin_context)
 
-    registry = PluginRegistry()
+        state = manager.get_plugin_state("bookmyshow")
+        assert state.status == PluginStatus.READY
+        assert state.initialized_at is not None
 
-    registry.register(DummyPlugin())
+    def test_initialize_unloaded_plugin_raises_error(self, manager, plugin_context):
+        """Test that initializing an unloaded plugin raises an error."""
+        manager.load_plugin("bookmyshow")
+        # Don't initialize, try to execute directly
 
-    return PluginManager(registry)
+        with pytest.raises(PluginStateError):
+            # Can't initialize from UNLOADED without loading first
+            state = manager.get_plugin_state("bookmyshow")
+            state.status = PluginStatus.UNLOADED  # Reset to unloaded
+            manager.initialize_plugin("bookmyshow", plugin_context)
 
+    def test_get_plugin(self, manager):
+        """Test getting a plugin instance."""
+        manager.load_plugin("bookmyshow")
 
-def create_context():
+        plugin = manager.get_plugin("bookmyshow")
 
-    return PluginContext(
-        runtime=None,
-        actions=None,
-        memory=None,
-        configuration=None,
-        logger=None,
-    )
+        assert plugin is not None
+        assert plugin.metadata.name == "bookmyshow"
 
+    def test_get_nonexistent_plugin_raises_error(self, manager):
+        """Test that getting a nonexistent plugin raises an error."""
+        with pytest.raises(PluginNotFoundError):
+            manager.get_plugin("nonexistent")
 
-def test_initialize():
+    def test_list_plugins(self, manager):
+        """Test listing all plugins."""
+        manager.load_plugin("bookmyshow")
 
-    manager = create_manager()
+        plugins = manager.list_plugins()
 
-    manager.initialize(
-        "dummy",
-        create_context(),
-    )
+        assert isinstance(plugins, list)
+        assert "bookmyshow" in plugins
 
-    managed = manager.get_managed_plugin("dummy")
+    def test_find_plugins_by_capability(self, manager):
+        """Test finding plugins by capability."""
+        manager.load_plugin("bookmyshow")
 
-    assert managed.state == PluginState.INITIALIZED
+        plugins = manager.find_plugins_by_capability("movie_booking")
 
-    assert managed.context is not None
+        assert len(plugins) > 0
+        assert any(p.metadata.name == "bookmyshow" for p in plugins)
 
-    assert managed.initialized_at is not None
+    def test_shutdown_plugin(self, manager, plugin_context):
+        """Test shutting down a plugin."""
+        manager.load_plugin("bookmyshow")
+        manager.initialize_plugin("bookmyshow", plugin_context)
 
-    print("✓ Plugin initialization test passed.")
+        manager.shutdown_plugin("bookmyshow")
 
+        state = manager.get_plugin_state("bookmyshow")
+        assert state.status == PluginStatus.SHUTDOWN
 
-def test_execute():
+    def test_shutdown_all_plugins(self, manager, plugin_context):
+        """Test shutting down all plugins."""
+        manager.load_plugin("bookmyshow")
+        manager.initialize_plugin("bookmyshow", plugin_context)
 
-    manager = create_manager()
+        manager.shutdown_all_plugins()
 
-    manager.initialize(
-        "dummy",
-        create_context(),
-    )
-
-    result = manager.execute(
-        "dummy",
-        "Book Ticket",
-    )
-
-    managed = manager.get_managed_plugin("dummy")
-
-    assert result == "Executed Book Ticket"
-
-    assert managed.execution_count == 1
-
-    assert managed.last_execution_at is not None
-
-    assert managed.state == PluginState.RUNNING
-
-    print("✓ Plugin execution test passed.")
-
-
-def test_shutdown():
-
-    manager = create_manager()
-
-    manager.initialize(
-        "dummy",
-        create_context(),
-    )
-
-    manager.shutdown("dummy")
-
-    managed = manager.get_managed_plugin("dummy")
-
-    assert managed.state == PluginState.STOPPED
-
-    print("✓ Plugin shutdown test passed.")
-
-
-def test_helper_methods():
-
-    manager = create_manager()
-
-    manager.initialize(
-        "dummy",
-        create_context(),
-    )
-
-    assert manager.is_initialized("dummy")
-
-    manager.execute(
-        "dummy",
-        "Task",
-    )
-
-    assert manager.is_running("dummy")
-
-    print("✓ Plugin helper methods test passed.")
-
-
-def run_tests():
-
-    print("\n" + "=" * 60)
-    print("Running PluginManager Tests")
-    print("=" * 60)
-
-    test_initialize()
-    test_execute()
-    test_shutdown()
-    test_helper_methods()
-
-    print("-" * 60)
-    print("✅ All PluginManager tests passed!")
-    print("=" * 60)
-
-
-if __name__ == "__main__":
-    run_tests()
+        states = manager.get_all_plugin_states()
+        for state in states.values():
+            assert state.status == PluginStatus.SHUTDOWN
