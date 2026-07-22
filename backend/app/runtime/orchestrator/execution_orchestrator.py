@@ -141,12 +141,28 @@ class ExecutionOrchestrator:
                 page=page,
             )
 
-            # Execute the workflow through the plugin
-            workflow_result = await self._execute_workflow(
-                plugin=pipeline_context.plugin,
-                workflow=pipeline_context.workflow,
-                workflow_context=workflow_context,
-            )
+            # Execute the workflow through the plugin with retries for RecoverableError
+            from app.browser_engine.exceptions.browser_errors import RecoverableError
+            from app.core.metrics import metrics
+            
+            max_retries = 3
+            workflow_result = None
+            
+            for attempt in range(1, max_retries + 1):
+                try:
+                    workflow_result = await self._execute_workflow(
+                        plugin=pipeline_context.plugin,
+                        workflow=pipeline_context.workflow,
+                        workflow_context=workflow_context,
+                    )
+                    break  # Success
+                except RecoverableError as e:
+                    self._logger.warning(f"Recoverable error on attempt {attempt}/{max_retries}: {e}")
+                    metrics.increment("orchestrator.execute.retry")
+                    if attempt == max_retries:
+                        raise e
+                    import asyncio
+                    await asyncio.sleep(2 ** attempt) # Exponential backoff
 
             # Build success result
             completed_at = datetime.utcnow()
@@ -181,6 +197,8 @@ class ExecutionOrchestrator:
             # Expected orchestration errors
             completed_at = datetime.utcnow()
             execution_time = (completed_at - started_at).total_seconds()
+            from app.core.metrics import metrics
+            metrics.increment("orchestrator.execute.error.expected")
 
             self._logger.error(
                 f"Orchestration failed for request {request.request_id}: {e}"
@@ -201,11 +219,38 @@ class ExecutionOrchestrator:
             # Unexpected errors
             completed_at = datetime.utcnow()
             execution_time = (completed_at - started_at).total_seconds()
+            
+            from app.core.metrics import metrics
+            metrics.increment("orchestrator.execute.error.unexpected")
 
             self._logger.error(
                 f"Unexpected error executing request {request.request_id}: {e}",
                 exc_info=True,
             )
+            
+            # Failure Diagnostics
+            try:
+                from app.browser_engine.models.screenshot_options import ScreenshotOptions, ImageType
+                from pathlib import Path
+                import time
+                import os
+                
+                diag_dir = Path("diagnostics")
+                diag_dir.mkdir(exist_ok=True)
+                timestamp = int(time.time())
+                
+                shot_path = diag_dir / f"fail_{request.request_id}_{timestamp}.png"
+                dom_path = diag_dir / f"fail_{request.request_id}_{timestamp}.html"
+                
+                await page.screenshot(ScreenshotOptions(path=shot_path, full_page=True, image_type=ImageType.PNG, quality=None))
+                
+                dom = await page.evaluate("document.documentElement.outerHTML")
+                with open(dom_path, "w", encoding="utf-8") as f:
+                    f.write(str(dom))
+                
+                self._logger.info(f"Captured failure diagnostics to {diag_dir}")
+            except Exception as diag_e:
+                self._logger.error(f"Failed to capture diagnostics: {diag_e}")
 
             return OrchestratedResult(
                 request_id=request.request_id,

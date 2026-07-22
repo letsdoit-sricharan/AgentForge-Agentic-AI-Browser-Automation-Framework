@@ -36,12 +36,13 @@ class HomePage(BasePage):
     _LOAD_INDICATORS = [
         'input[placeholder*="Search"]',
         'input[aria-label*="Search"]',
-        'input[type="search"]',
-        'header',
-        'nav',
     ]
 
-    SEARCH_BOX = 'input[placeholder="Search for your city"]'
+    GLOBAL_SEARCH_BOX = '#search input[type="text"]'
+
+    CITY_SEARCH_BOX = 'input[placeholder="Search for your city"]'
+
+    CITY_RESULT_TEMPLATE = 'div[data-result-item="true"]:has-text("{}")'
 
     async def open(self) -> None:
         """
@@ -51,7 +52,7 @@ class HomePage(BasePage):
         await NavigateAction(
             url=self.URL,
             options=NavigationOptions(
-                wait_until=LoadState.NETWORK_IDLE,
+                wait_until=LoadState.DOM_CONTENT_LOADED,
                 timeout=self._NAV_TIMEOUT_MS,
             ),
         ).execute(
@@ -64,7 +65,7 @@ class HomePage(BasePage):
         """
 
         await WaitAction(
-            load_state=LoadState.NETWORK_IDLE,
+            load_state=LoadState.DOM_CONTENT_LOADED,
             timeout=self._NAV_TIMEOUT_MS,
         ).execute(
             self.page,
@@ -93,6 +94,35 @@ class HomePage(BasePage):
 
         return False
 
+    async def search_movie(
+        self,
+        movie_name: str,
+    ) -> None:
+        """
+        Search for a movie.
+        """
+
+        search_button = self.page.locator(
+            'div[aria-label^="Search for Movies"]',
+        )
+
+        await ClickAction(
+            locator=search_button,
+        ).execute(
+            self.page,
+        )
+
+        search_box = self.page.locator(
+            self.GLOBAL_SEARCH_BOX,
+        )
+
+        await FillAction(
+            locator=search_box,
+            text=movie_name,
+        ).execute(
+            self.page,
+        )
+
     async def search_city(
         self,
         city: str,
@@ -102,7 +132,7 @@ class HomePage(BasePage):
         """
 
         search_box = self.page.locator(
-            self.SEARCH_BOX,
+            self.CITY_SEARCH_BOX,
         )
 
         await FillAction(
@@ -120,9 +150,11 @@ class HomePage(BasePage):
         Select the requested city.
         """
 
+        selector = self.CITY_RESULT_TEMPLATE.format(city)
+
         city_locator = self.page.locator(
-            f"text={city}",
-        )
+            selector,
+        ).first()
 
         await city_locator.wait()
 
@@ -141,9 +173,10 @@ class HomePage(BasePage):
         """
 
         try:
+            selector = 'text="{}"'.format(city)
             city_locator = self.page.locator(
-                f"text={city}",
-            )
+                selector,
+            ).first()
 
             return await city_locator.is_visible()
 

@@ -33,6 +33,9 @@ class BookMyShowPlugin(Plugin):
     def __init__(self) -> None:
         self._context: PluginContext | None = None
         self._workflow = BookingWorkflow()
+        self.workflows = {
+            "booking_workflow": self._workflow
+        }
 
     @property
     def metadata(self):

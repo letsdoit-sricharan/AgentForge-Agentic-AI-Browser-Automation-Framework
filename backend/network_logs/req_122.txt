@@ -1,0 +1,5 @@
+URL: https://in.bookmyshow.com/api/promotion-serving/v1/fetch
+Method: POST
+Content-Type: application/json
+==================================================
+{"ads":[]}

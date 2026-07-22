@@ -1,36 +1,39 @@
 """
-Execution request.
+Execution request model.
 
-Represents a single runtime execution request.
-
-Responsibilities:
-    - Identify the plugin to execute.
-    - Carry the plugin context.
-    - Carry the workflow input.
-
-Does NOT:
-    - Execute plugins.
-    - Manage browser resources.
-    - Contain runtime logic.
+Represents a request submitted to the Agent Runtime.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from typing import Any
-
-from app.plugins.interfaces.plugin import Plugin
-from app.plugins.interfaces.plugin_context import PluginContext
+from uuid import uuid4
 
 
-@dataclass
+@dataclass()
 class ExecutionRequest:
     """
-    Represents a single plugin execution request.
+    Represents a request submitted to the runtime.
+
+    This object contains only information provided by the caller.
     """
 
-    plugin: Plugin
+    plugin: str
 
-    plugin_context: PluginContext
+    workflow: str
 
-    task: Any
+    inputs: dict[str, Any] = field(default_factory=dict)
+
+    priority: int = 0
+
+    tags: list[str] = field(default_factory=list)
+
+    correlation_id: str | None = None
+
+    request_id: str = field(default_factory=lambda: str(uuid4()))
+
+    created_at: datetime = field(
+        default_factory=lambda: datetime.now(UTC)
+    )

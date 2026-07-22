@@ -1,0 +1,5 @@
+URL: https://www.google-analytics.com/j/collect?v=1&_v=j102&a=1249365551&t=event&ni=0&_s=1&dl=https%3A%2F%2Fin.bookmyshow.com%2Fexplore%2Fhome%2Fmumbai&ul=en-us&dt=Movie%20Tickets%2C%20Plays%2C%20Sports%2C%20Events%20%26%20Cinemas%20nearby%20-%20BookMyShow&sr=1280x720&vp=1280x720&ec=change_region_button_clicked&ea=click&_u=aAhAAEABAAQCACAEO~&jid=1737700908&gjid=672422409&cid=247559745.1784708376&tid=UA-27207583-8&_gid=840663977.1784708377&_r=1&_slc=1&gtm=45He67k1n81NJL2Q2Qv76179510za200zd76179510&cd16=home_discover&cd34=new_flow&cd48=guest&cd59=WEB&cd107=&cd131=GTM-NJL2Q2Q&cd146=1.978591114.1784708370895&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938465~115938469~118131808~118897920~118897930~118981136~119773331~119896803~119948852&cd104=247559745.1784708376&z=411689445
+Method: POST
+Content-Type: text/plain
+==================================================
+2,x

@@ -65,6 +65,19 @@ logger.add(
         "{name}:{function}:{line} | "
         "{message}"
     ),
+    serialize=True, # Structured JSON logging
 )
 
-__all__ = ["logger"]
+# --------------------------------------------------
+# Contextual Timelines
+# --------------------------------------------------
+import contextvars
+
+session_id_var: contextvars.ContextVar[str] = contextvars.ContextVar("session_id", default="unknown")
+step_name_var: contextvars.ContextVar[str] = contextvars.ContextVar("step_name", default="unknown")
+
+def contextual_logger():
+    """Returns a logger bound with the current session and step context."""
+    return logger.bind(session_id=session_id_var.get(), step_name=step_name_var.get())
+
+__all__ = ["logger", "contextual_logger", "session_id_var", "step_name_var"]

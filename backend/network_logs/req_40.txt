@@ -1,0 +1,5 @@
+URL: https://api2.branch.io/v1/open
+Method: POST
+Content-Type: application/json; charset=utf-8
+==================================================
+{"browser_fingerprint_id":"1608390362612911856","data":"{\"+clicked_branch_link\":false,\"+is_first_session\":false}","has_app":false,"identity_id":"1608390369480227449","link":"https://bookmy.show/a/key_live_fbu2mYMpaA235RDq42UTXcejtso3tHqR?%24identity_id=1608390369480227449","session_id":"1608390369484396142"}

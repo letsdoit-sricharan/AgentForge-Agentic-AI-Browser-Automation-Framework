@@ -59,3 +59,17 @@ class LocatorError(BrowserEngineError):
     """
 
     pass
+
+
+class RecoverableError(BrowserEngineError):
+    """
+    Raised for errors that should be retried automatically (e.g. timeout, intermittent network).
+    """
+    pass
+
+
+class FatalError(BrowserEngineError):
+    """
+    Raised for errors that cannot be recovered from by retrying (e.g. invalid credentials).
+    """
+    pass

@@ -1,47 +1,70 @@
 """
 Purpose:
-    Defines the UI contract for the BookMyShow seat selection page.
+    Represents the BookMyShow seat selection page.
 
 Responsibilities:
-    - Store locator constants for seat selection.
-    - Provide a centralized source for seat page selectors.
+    - Select ticket count.
+    - Select specific seats.
+    - Click Pay button.
 
 Does NOT:
-    - Perform browser automation.
+    - Execute workflow logic.
     - Import Playwright.
-    - Execute browser actions.
 """
 
 from __future__ import annotations
 
-from typing import ClassVar
+from app.actions.element import ClickAction
+from app.plugin_framework.pages import BasePage
 
-from app.plugins.bookmyshow.pages.base_page import PageLocators
 
-
-class SeatPage(PageLocators):
+class SeatPage(BasePage):
     """
-    BookMyShow seat selection page definitions.
+    Page Object representing the seat selection page.
     """
 
-    URL: ClassVar[str] = ""
+    TICKET_COUNT_TEMPLATE = 'li[id="quantity-{}"]'
+    
+    SELECT_SEATS_BUTTON = "role=button[name='Select Seats'i]"
 
-    # Seat layout
-    SEAT_MAP: ClassVar[str] = "seat_map"
-    SEAT_ROW: ClassVar[str] = "seat_row"
-    SEAT: ClassVar[str] = "seat"
+    AVAILABLE_SEAT_TEMPLATE = "role=button[name='Available'i]"
 
-    # Seat states
-    AVAILABLE_SEAT: ClassVar[str] = "available_seat"
-    SELECTED_SEAT: ClassVar[str] = "selected_seat"
-    BOOKED_SEAT: ClassVar[str] = "booked_seat"
+    PAY_BUTTON = "role=button[name=/Pay/i]"
 
-    # Categories
-    SEAT_CATEGORY: ClassVar[str] = "seat_category"
+    async def select_ticket_count(self, count: int) -> None:
+        """
+        Select the number of tickets.
+        """
+        selector = self.TICKET_COUNT_TEMPLATE.format(count)
+        
+        count_locator = self.page.locator(selector)
+        await count_locator.wait()
+        await count_locator.click(force=True)
 
-    # Booking summary
-    TICKET_COUNT: ClassVar[str] = "ticket_count"
-    TOTAL_PRICE: ClassVar[str] = "total_price"
+        btn_locator = self.page.locator(self.SELECT_SEATS_BUTTON)
+        await btn_locator.click(force=True)
 
-    # Navigation
-    PROCEED_BUTTON: ClassVar[str] = "proceed_button"
+    async def select_seats(self, count: int, preference: str | None = None) -> None:
+        """
+        Select available seats on the map using the Canvas Engine.
+        """
+        # Create a canvas locator builder for Konva using the canvas DOM selector
+        canvas_builder = self.page.canvas("konva", "canvas")
+        
+        # We assume available seats have some identifier like name="Available" in Konva
+        # The micro-syntax in CanvasLocator supports this
+        available_seats = canvas_builder.locator("name=Available")
+        
+        for i in range(count):
+            # nth() returns a new CanvasLocator targeting the i-th element
+            seat_locator = available_seats.nth(i)
+            # click() will resolve the node and dispatch mouse events at absolute coordinates
+            await seat_locator.click(force=True)
+
+    async def proceed_to_pay(self) -> None:
+        """
+        Click the Pay button.
+        """
+        pay_locator = self.page.locator(self.PAY_BUTTON)
+        await pay_locator.wait()
+        await ClickAction(locator=pay_locator).execute(self.page)

@@ -1,0 +1,5 @@
+URL: https://eu1.clevertap-prod.com/a?t=96&type=push&d=N4IgLgngDgpiBcIoCcD2AzAlgGzgGiTS1wVAGMwB9VKMVAVzAXQENsBnGAXwMwBMEIABwA2AFoBaAOwipEgJyyxIAlADmCAIwEW6UiGyYARoIDuMIxPZ8A1hIBuAJgB0U5wBYVhVHTKpsggAWYGBQ7CBcXEAAA%3D%3D&optOut=false&rn=1&i=1784708374&sn=0&tries=1&origin=https%3A%2F%2Fin.bookmyshow.com&useIP=true&r=1784708374327
+Method: GET
+Content-Type: text/javascript;charset=utf-8
+==================================================
+$WZRK_WR.s('2dd76c018b6344ce82ee04b1f101f5fc',1784708372,false,1,true);$WZRK_WR.tr({"g":"2dd76c018b6344ce82ee04b1f101f5fc","arp":{"j_n":"Zw==","i_n":"Zm1keQcEAgJi","d_ts":0,"dh":0,"v":2,"j_s":"{}","id":"86Z-767-967Z","r_ts":1784708372},"webInboxSetting":{},"wtq":[],"wndtq":[]});

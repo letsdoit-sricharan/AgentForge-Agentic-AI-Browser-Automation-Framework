@@ -1,44 +1,78 @@
 """
 Purpose:
-    Defines the UI contract for the BookMyShow theatre selection page.
+    Represents the BookMyShow theatre selection page.
 
 Responsibilities:
-    - Store locator constants for theatre and show selection.
-    - Provide a centralized source for theatre page selectors.
+    - Select a date.
+    - Select a theatre.
+    - Select a show time.
+    - Handle any "Accept Terms" popups.
 
 Does NOT:
-    - Perform browser automation.
+    - Execute workflow logic.
     - Import Playwright.
-    - Execute browser actions.
 """
 
 from __future__ import annotations
 
-from typing import ClassVar
+from app.actions.element import ClickAction
+from app.plugin_framework.pages import BasePage
 
-from app.plugins.bookmyshow.pages.base_page import PageLocators
 
-
-class TheatrePage(PageLocators):
+class TheatrePage(BasePage):
     """
-    BookMyShow theatre page definitions.
+    Page Object representing the theatre and show selection page.
     """
 
-    URL: ClassVar[str] = ""
+    DATE_FILTER_TEMPLATE = "text={}"
 
-    # Theatre listings
-    THEATRE_LIST: ClassVar[str] = "theatre_list"
-    THEATRE_CARD: ClassVar[str] = "theatre_card"
-    THEATRE_NAME: ClassVar[str] = "theatre_name"
+    THEATRE_NAME_TEMPLATE = "text={}"
 
-    # Show timings
-    SHOW_LIST: ClassVar[str] = "show_list"
-    SHOW_TIME: ClassVar[str] = "show_time"
+    SHOW_TIME_TEMPLATE = "text={}"
 
-    # Availability
-    AVAILABLE_SHOW: ClassVar[str] = "available_show"
-    FAST_FILLING_BADGE: ClassVar[str] = "fast_filling_badge"
-    SOLD_OUT_BADGE: ClassVar[str] = "sold_out_badge"
+    ACCEPT_TERMS_BUTTON = "text=Accept"
 
-    # Navigation
-    NEXT_BUTTON: ClassVar[str] = "next_button"
+    async def select_date(self, show_date: str) -> None:
+        """
+        Select a specific date for the movie.
+        """
+        selector = self.DATE_FILTER_TEMPLATE.format(show_date)
+        
+        date_locator = self.page.locator(selector)
+        await date_locator.wait()
+        await ClickAction(locator=date_locator).execute(self.page)
+
+    async def select_theatre_and_show(self, theatre: str, time: str) -> None:
+        """
+        Select a specific theatre and show time.
+        """
+        # Find the deepest div that contains both the theatre name and the show time,
+        # then find the time element inside it.
+        # This works correctly with BookMyShow's virtualized list structure.
+        time_locator = (
+            self.page.locator("div")
+            .filter(has_text=theatre)
+            .filter(has_text=time)
+            .last()
+            .locator(f'text="{time}"')
+            .first()
+        )
+        
+        await time_locator.wait()
+        await ClickAction(locator=time_locator).execute(self.page)
+
+    async def accept_terms(self) -> None:
+        """
+        Accept terms and conditions if the popup appears.
+        """
+        if not self.ACCEPT_TERMS_BUTTON:
+            return
+            
+        try:
+            terms_locator = self.page.locator(self.ACCEPT_TERMS_BUTTON)
+            await terms_locator.wait(timeout=5000)
+            if await terms_locator.is_visible():
+                await ClickAction(locator=terms_locator).execute(self.page)
+        except Exception:
+            # Popup might not always appear
+            pass

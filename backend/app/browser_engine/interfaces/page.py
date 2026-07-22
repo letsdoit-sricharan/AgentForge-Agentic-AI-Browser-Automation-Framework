@@ -24,6 +24,7 @@ from app.browser_engine.interfaces.locator import Locator
 from app.browser_engine.models.load_state import LoadState
 from app.browser_engine.models.navigation_options import NavigationOptions
 from app.browser_engine.models.screenshot_options import ScreenshotOptions
+from app.browser_engine.javascript.bridge import JavaScriptBridge
 
 
 class Page(ABC):
@@ -73,6 +74,14 @@ class Page(ABC):
         """
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def js_bridge(self) -> JavaScriptBridge:
+        """
+        Retrieve the JavaScript Bridge associated with this page.
+        """
+        raise NotImplementedError
+
     @abstractmethod
     def locator(self, selector: str) -> Locator:
         """
@@ -84,6 +93,20 @@ class Page(ABC):
 
         Returns:
             A browser-agnostic Locator instance.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def canvas(self, engine_type: str, dom_selector: str) -> "CanvasLocatorBuilder":
+        """
+        Provides an API to build locators for virtual canvas elements.
+        
+        Args:
+            engine_type: The rendering engine (e.g. 'konva', 'fabric', 'pixi').
+            dom_selector: The CSS selector for the canvas DOM node.
+            
+        Returns:
+            A CanvasLocatorBuilder to query virtual nodes.
         """
         raise NotImplementedError
 
@@ -181,6 +204,17 @@ class Page(ABC):
     ) -> None:
         """
         Move the mouse cursor to the specified coordinates.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    async def mouse_click(
+        self,
+        x: float,
+        y: float,
+    ) -> None:
+        """
+        Click at the specified coordinates.
         """
         raise NotImplementedError
 

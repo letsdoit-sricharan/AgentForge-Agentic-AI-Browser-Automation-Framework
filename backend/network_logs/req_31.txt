@@ -1,0 +1,5 @@
+URL: https://clickstream-in.bookmyshow.com/v1/eventstore/publish
+Method: POST
+Content-Type: application/json; charset=utf-8
+==================================================
+{"status":"Message queued for Kafka"}

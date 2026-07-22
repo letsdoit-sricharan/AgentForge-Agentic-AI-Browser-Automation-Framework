@@ -94,8 +94,7 @@ class BookingWorkflow(Workflow):
                         f"Workflow failed at step "
                         f"'{step.name}': {result.message}"
                     ),
-                ),
-            )
+                )
 
         return WorkflowResult(
             success=True,

@@ -1,0 +1,13 @@
+<li class="sc-1atac75-2 ehGfts">
+ <div class="sc-1atac75-4 ckbQyq">
+  <p class="sc-1atac75-5 LnrJj">
+   EXECUTIVE
+  </p>
+  <p class="sc-1atac75-6 dIPKtj">
+   ₹250
+  </p>
+  <p class="sc-1atac75-7 jJdNIy">
+   Available
+  </p>
+ </div>
+</li>

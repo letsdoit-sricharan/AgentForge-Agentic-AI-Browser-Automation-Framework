@@ -32,6 +32,8 @@ from app.browser_engine.interfaces.page import Page
 from app.browser_engine.models.load_state import LoadState
 from app.browser_engine.models.navigation_options import NavigationOptions
 from app.browser_engine.models.screenshot_options import ScreenshotOptions
+from app.browser_engine.javascript.bridge import JavaScriptBridge
+from app.browser_engine.implementations.playwright.playwright_javascript_bridge import PlaywrightJavaScriptBridge
 
 
 class PlaywrightPage(Page):
@@ -41,6 +43,11 @@ class PlaywrightPage(Page):
 
     def __init__(self, page: PlaywrightPageInstance) -> None:
         self._page = page
+        self._js_bridge = PlaywrightJavaScriptBridge(self._page)
+
+    @property
+    def js_bridge(self) -> JavaScriptBridge:
+        return self._js_bridge
 
     async def goto(
         self,
@@ -89,12 +96,17 @@ class PlaywrightPage(Page):
         return self._page.url
 
     def locator(self, selector: str) -> Locator:
-        """
-        Create a locator for the given selector.
-        """
-        return PlaywrightLocator(
-            self._page.locator(selector)
+        # Avoid circular import
+        from app.browser_engine.implementations.playwright.playwright_locator import (
+            PlaywrightLocator,
         )
+
+        pw_locator = self._page.locator(selector)
+        return PlaywrightLocator(pw_locator)
+
+    def canvas(self, engine_type: str, dom_selector: str):
+        from app.actions.locator.canvas_locator import CanvasLocatorBuilder
+        return CanvasLocatorBuilder(self, engine_type, dom_selector)
 
     async def screenshot(
         self,
@@ -233,6 +245,21 @@ class PlaywrightPage(Page):
         except Exception as exc:
             raise PageError(
                 f"Failed to move mouse to ({x}, {y})."
+            ) from exc
+
+    async def mouse_click(
+        self,
+        x: float,
+        y: float,
+    ) -> None:
+        """
+        Click at the specified coordinates.
+        """
+        try:
+            await self._page.mouse.click(x, y)
+        except Exception as exc:
+            raise PageError(
+                f"Failed to click at ({x}, {y})."
             ) from exc
 
     async def drag(

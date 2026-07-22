@@ -1,0 +1,5 @@
+URL: https://app.link/_r?sdk=web2.87.1&branch_key=key_live_fbu2mYMpaA235RDq42UTXcejtso3tHqR&callback=branch_callback__0
+Method: GET
+Content-Type: text/javascript; charset=utf-8
+==================================================
+/**/ typeof branch_callback__0 === 'function' && branch_callback__0("1608390362612911856");

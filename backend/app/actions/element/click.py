@@ -22,6 +22,7 @@ class ClickAction(BaseAction):
     """
 
     locator: Locator
+    force: bool = False
 
     async def execute(
         self,
@@ -36,7 +37,7 @@ class ClickAction(BaseAction):
         """
 
         try:
-            await self.locator.click()
+            await self.locator.click(force=self.force)
 
         except Exception as exc:
             raise ActionExecutionError(

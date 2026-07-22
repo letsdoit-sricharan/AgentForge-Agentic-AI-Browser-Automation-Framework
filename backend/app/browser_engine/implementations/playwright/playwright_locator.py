@@ -46,12 +46,12 @@ class PlaywrightLocator(Locator):
         """
         self._locator = locator
 
-    async def click(self) -> None:
+    async def click(self, force: bool = False) -> None:
         """
         Click the element.
         """
         try:
-            await self._locator.click()
+            await self._locator.click(force=force)
 
         except PlaywrightTimeoutError as exc:
             raise BrowserTimeoutError(
@@ -228,4 +228,23 @@ class PlaywrightLocator(Locator):
         """
         return PlaywrightLocator(
             self._locator.nth(index)
+        )
+
+    def filter(self, has_text: str | None = None) -> Locator:
+        """
+        Return a locator narrowed by filter criteria.
+        """
+        kwargs = {}
+        if has_text is not None:
+            kwargs["has_text"] = has_text
+        return PlaywrightLocator(
+            self._locator.filter(**kwargs)
+        )
+
+    def locator(self, selector: str) -> Locator:
+        """
+        Find an element matching the selector inside this locator.
+        """
+        return PlaywrightLocator(
+            self._locator.locator(selector)
         )

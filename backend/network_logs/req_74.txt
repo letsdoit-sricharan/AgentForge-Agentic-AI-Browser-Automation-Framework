@@ -1,0 +1,5 @@
+URL: https://ampcid.google.co.in/v1/publisher:getClientId?key=AIzaSyA65lEHUEizIsNtlbNo-l2K18dT680nsaM
+Method: POST
+Content-Type: application/json; charset=UTF-8
+==================================================
+{}

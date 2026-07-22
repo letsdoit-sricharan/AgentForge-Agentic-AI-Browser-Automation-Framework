@@ -1,0 +1,4 @@
+URL: https://adtech-events.bookmyshow.com/api/adevent/v3/unused-impression
+Method: POST
+Content-Type: 
+==================================================

@@ -1,43 +1,58 @@
 """
 Purpose:
-    Defines the UI contract for the BookMyShow payment page.
+    Represents the BookMyShow payment page.
 
 Responsibilities:
-    - Store locator constants for payment and ticket confirmation.
-    - Provide a centralized source for payment page selectors.
+    - Enter contact details.
+    - Proceed to payment.
+    - Download ticket (if applicable).
 
 Does NOT:
-    - Perform browser automation.
+    - Execute workflow logic.
     - Import Playwright.
-    - Execute browser actions.
 """
 
 from __future__ import annotations
 
-from typing import ClassVar
+from app.actions.element import ClickAction, FillAction
+from app.plugin_framework.pages import BasePage
 
-from app.plugins.bookmyshow.pages.base_page import PageLocators
 
-
-class PaymentPage(PageLocators):
+class PaymentPage(BasePage):
     """
-    BookMyShow payment page definitions.
+    Page Object representing the payment page/modal.
     """
 
-    URL: ClassVar[str] = ""
+    EMAIL_INPUT = 'input[id="deemed-email"]'
 
-    # Payment
-    PAYMENT_METHODS: ClassVar[str] = "payment_methods"
-    PAYMENT_BUTTON: ClassVar[str] = "payment_button"
+    PHONE_INPUT = 'input[id="deemed-mobile-number"]'
 
-    # Status
-    PAYMENT_STATUS: ClassVar[str] = "payment_status"
-    SUCCESS_MESSAGE: ClassVar[str] = "success_message"
-    FAILURE_MESSAGE: ClassVar[str] = "failure_message"
+    CONTINUE_PAYMENT_BUTTON = "role=button[name='Submit'i]"
 
-    # Ticket
-    DOWNLOAD_TICKET_BUTTON: ClassVar[str] = "download_ticket_button"
-    BOOKING_ID: ClassVar[str] = "booking_id"
+    DOWNLOAD_TICKET_BUTTON = "text=Download Ticket"
 
-    # Navigation
-    BACK_TO_HOME_BUTTON: ClassVar[str] = "back_to_home_button"
+    async def enter_contact_details(self, email: str, phone: str) -> None:
+        """
+        Enter contact details to proceed with payment.
+        """
+        email_locator = self.page.locator(self.EMAIL_INPUT)
+        await email_locator.wait()
+        await FillAction(locator=email_locator, text=email).execute(self.page)
+
+        phone_locator = self.page.locator(self.PHONE_INPUT)
+        await FillAction(locator=phone_locator, text=phone).execute(self.page)
+
+    async def proceed_to_payment(self) -> None:
+        """
+        Click the button to continue to the payment gateway.
+        """
+        btn_locator = self.page.locator(self.CONTINUE_PAYMENT_BUTTON)
+        await ClickAction(locator=btn_locator).execute(self.page)
+
+    async def download_ticket(self) -> None:
+        """
+        Click the download ticket button on the confirmation page.
+        """
+        btn_locator = self.page.locator(self.DOWNLOAD_TICKET_BUTTON)
+        await btn_locator.wait()
+        await ClickAction(locator=btn_locator).execute(self.page)
