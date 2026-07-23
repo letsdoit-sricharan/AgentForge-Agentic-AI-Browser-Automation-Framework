@@ -10,6 +10,8 @@ from fastapi import FastAPI
 
 from app.core.config import settings
 from app.core.logger import logger
+from fastapi.staticfiles import StaticFiles
+from app.api.endpoints import bookings
 
 
 @asynccontextmanager
@@ -43,6 +45,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+app.include_router(bookings.router, prefix="/api/bookings", tags=["Bookings"])
+app.mount("/demo", StaticFiles(directory="app/static", html=True), name="static")
 
 @app.get("/", tags=["Root"])
 async def root():

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mock BookMyShow</title>
+    <script src="https://unpkg.com/konva@9.3.1/konva.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        #canvas-container { border: 1px solid #ccc; width: 600px; height: 400px; }
+        #movie-results a { display: block; padding: 8px; color: blue; text-decoration: underline; cursor: pointer; }
+        #movie-results { min-height: 20px; }
+    </style>
+</head>
+<body>
+
+<!-- Search / Home Page -->
+<div id="search-page" class="page-section active">
+    <h1>Search Movies</h1>
+    <!-- City Selection -->
+    <input type="text" placeholder="Search for your city" id="city-search" />
+    <div data-result-item="true">Mumbai</div>
+
+    <div aria-label="Search for Movies">Search Bar Trigger</div>
+    <input type="text" placeholder="Search for Movies..." id="search-box" />
+    <div id="movie-results"></div>
+</div>
+
+<!-- Movie Detail Page -->
+<div id="movie-page" class="page-section">
+    <h1 id="movie-title">Deadpool &amp; Wolverine</h1>
+    <button id="book-tickets-btn">Book tickets</button>
+</div>
+
+<!-- Theatre / Showtime Page -->
+<div id="theatre-page" class="page-section">
+    <h1>Select Theatre and Time</h1>
+    <div id="date-filters">
+        <button class="date-btn" data-date="2026-07-23">2026-07-23</button>
+    </div>
+    <div class="theatre">
+        <h2>PVR: Phoenix Palladium</h2>
+        <button class="time-btn" data-time="07:30 PM">07:30 PM</button>
+    </div>
+    <button id="accept-terms">Accept</button>
+</div>
+
+<!-- Seat Selection Page -->
+<div id="seat-page" class="page-section">
+    <h1>Select Seats</h1>
+    <ul id="quantity">
+        <li id="quantity-1">1</li>
+        <li id="quantity-2">2</li>
+        <li id="quantity-3">3</li>
+    </ul>
+    <button id="select-seats-btn">Select Seats</button>
+    <div id="canvas-container"></div>
+    <button id="pay-btn">Pay</button>
+</div>
+
+<!-- Payment Page -->
+<div id="payment-page" class="page-section">
+    <h1>Payment</h1>
+    <p>Success!</p>
+</div>
+
+<script>
+    // Page navigation helper
+    function showPage(id) {
+        document.querySelectorAll('.page-section').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.getElementById(id).classList.add('active');
+    }
+
+    // ---- Search Page ----
+    document.getElementById('search-box').addEventListener('input', function(e) {
+        var val = e.target.value.toLowerCase();
+        var results = document.getElementById('movie-results');
+        if (val.includes('deadpool')) {
+            results.innerHTML = '<a href="#" id="deadpool-link">Deadpool &amp; Wolverine</a>';
+            document.getElementById('deadpool-link').addEventListener('click', function(ev) {
+                ev.preventDefault();
+                document.getElementById('movie-title').innerText = 'Deadpool & Wolverine';
+                showPage('movie-page');
+            });
+        } else {
+            results.innerHTML = '';
+        }
+    });
+
+    // Allow direct navigation to movie page via JS for automation
+    window.__goToMoviePage = function() {
+        document.getElementById('movie-title').innerText = 'Deadpool & Wolverine';
+        showPage('movie-page');
+    };
+
+    // ---- Movie Page ----
+    document.getElementById('book-tickets-btn').addEventListener('click', function() {
+        showPage('theatre-page');
+    });
+
+    // ---- Theatre Page ----
+    document.getElementById('accept-terms').addEventListener('click', function() {
+        showPage('seat-page');
+        initCanvas();
+    });
+
+    // ---- Seat Page ----
+    document.getElementById('pay-btn').addEventListener('click', function() {
+        showPage('payment-page');
+    });
+
+    // ---- Konva Canvas Seat Map ----
+    function initCanvas() {
+        var stage = new Konva.Stage({
+            container: 'canvas-container',
+            width: 600,
+            height: 400,
+        });
+
+        var layer = new Konva.Layer();
+        stage.add(layer);
+
+        window.__selectedSeats = [];
+
+        for (var i = 0; i < 5; i++) {
+            (function(idx) {
+                var seat = new Konva.Rect({
+                    x: 50 + (idx * 60),
+                    y: 100,
+                    width: 40,
+                    height: 40,
+                    fill: 'green',
+                    name: 'Available',
+                    id: 'seat-' + idx,
+                });
+
+                seat.on('click', function() {
+                    this.fill('blue');
+                    this.setAttr('name', 'Selected');
+                    window.__selectedSeats.push('seat-' + idx);
+                    layer.draw();
+                });
+
+                layer.add(seat);
+            })(i);
+        }
+
+        layer.draw();
+
+        // Expose stage for automation
+        window.__konvaStage = stage;
+        window.__konvaLayer = layer;
+    }
+</script>
+</body>
+</html>

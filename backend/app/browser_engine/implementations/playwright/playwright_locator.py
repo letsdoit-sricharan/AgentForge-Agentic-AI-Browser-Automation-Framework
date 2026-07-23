@@ -60,7 +60,7 @@ class PlaywrightLocator(Locator):
 
         except Exception as exc:
             raise LocatorError(
-                "Failed to click the element."
+                f"Failed to click the element: {exc}"
             ) from exc
 
     async def fill(self, value: str) -> None:
@@ -77,7 +77,7 @@ class PlaywrightLocator(Locator):
 
         except Exception as exc:
             raise LocatorError(
-                "Failed to fill the element."
+                f"Failed to fill the element: {exc}"
             ) from exc
 
     async def text(self) -> str:
@@ -163,7 +163,7 @@ class PlaywrightLocator(Locator):
 
         except Exception as exc:
             raise LocatorError(
-                "Failed while waiting for the element."
+                f"Failed while waiting for the element: {exc}"
             ) from exc
 
     async def wait_until_hidden(
@@ -248,3 +248,18 @@ class PlaywrightLocator(Locator):
         return PlaywrightLocator(
             self._locator.locator(selector)
         )
+
+    async def bounding_box(self) -> dict | None:
+        """
+        Get the bounding box of the element.
+        """
+        try:
+            return await self._locator.bounding_box()
+        except PlaywrightTimeoutError as exc:
+            raise BrowserTimeoutError(
+                "Timed out while getting bounding box."
+            ) from exc
+        except Exception as exc:
+            raise LocatorError(
+                f"Failed to get bounding box: {exc}"
+            ) from exc

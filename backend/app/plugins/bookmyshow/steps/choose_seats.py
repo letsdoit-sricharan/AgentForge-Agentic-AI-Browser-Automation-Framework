@@ -3,25 +3,25 @@ Purpose:
     Workflow step that selects seats on BookMyShow.
 
 Responsibilities:
-    - Navigate to the seat selection interface.
-    - Select the required number of seats.
+    - Select the required number of tickets.
+    - Select available seats from the canvas seat map.
 
 Does NOT:
     - Import Playwright.
-    - Contain page selectors (pending real-selector implementation).
+    - Contain page selectors.
 """
 
 from __future__ import annotations
 
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
+from app.plugins.bookmyshow.models.booking_request import BookingRequest
+from app.plugins.bookmyshow.pages.seat_page import SeatPage
 from app.plugins.bookmyshow.steps.base_step import BaseBookMyShowStep
 
 
 class ChooseSeatsStep(BaseBookMyShowStep):
     """
-    Workflow step: select seats in the theatre.
-
-    TODO: Implement with real BookMyShow selectors in the plugin completion phase.
+    Workflow step: select ticket count and choose seats in the theatre.
     """
 
     @property
@@ -36,7 +36,10 @@ class ChooseSeatsStep(BaseBookMyShowStep):
         self,
         context: WorkflowContext,
     ) -> None:
-        raise NotImplementedError(
-            "ChooseSeatsStep.perform() requires real BookMyShow selectors. "
-            "Implement in the plugin completion phase."
-        )
+        request: BookingRequest = context.input_data["booking_request"]
+        page = SeatPage(context)
+        await page.select_ticket_count(request.ticket_count)
+        await page.select_seats(
+            request.ticket_count,
+            preference=request.seat_preference,
+        )

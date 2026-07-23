@@ -17,10 +17,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional
-
-
-@dataclass(frozen=True)
+        
+@dataclass(frozen=True, slots=True)
 class BookingRequest:
     """
     Represents a movie ticket booking request.
@@ -32,10 +30,10 @@ class BookingRequest:
 
     show_date: date
 
-    preferred_time: Optional[str] = None
+    preferred_time: str | None = None
 
-    preferred_theatre: Optional[str] = None
+    preferred_theatre: str | None = None
 
-    seat_preference: Optional[str] = None
+    seat_preference: str | None = None
 
     ticket_count: int = 1

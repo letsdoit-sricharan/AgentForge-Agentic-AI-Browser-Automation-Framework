@@ -24,6 +24,7 @@ from app.browser_engine.interfaces.locator import Locator
 from app.browser_engine.models.load_state import LoadState
 from app.browser_engine.models.navigation_options import NavigationOptions
 from app.browser_engine.models.screenshot_options import ScreenshotOptions
+from app.browser_engine.interfaces.canvas_locator_builder import CanvasLocatorBuilder
 from app.browser_engine.javascript.bridge import JavaScriptBridge
 
 
@@ -97,7 +98,7 @@ class Page(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def canvas(self, engine_type: str, dom_selector: str) -> "CanvasLocatorBuilder":
+    def canvas(self, engine_type: str, dom_selector: str) -> CanvasLocatorBuilder:
         """
         Provides an API to build locators for virtual canvas elements.
         
@@ -112,9 +113,9 @@ class Page(ABC):
 
     @abstractmethod
     async def screenshot(
-    self,
-    options: ScreenshotOptions,
-    )    -> Path:
+        self,
+        options: ScreenshotOptions,
+    ) -> Path:
         """
         Capture a screenshot of the current page.
 
@@ -234,7 +235,7 @@ class Page(ABC):
     @abstractmethod
     async def drag_and_drop(
         self,
-    source_selector: str,
+        source_selector: str,
         target_selector: str,
     ) -> None:
         """
@@ -289,9 +290,9 @@ class Page(ABC):
 
     @abstractmethod
     async def evaluate(
-    self,
-    script: str,
-    argument: object | None = None,
+        self,
+        script: str,
+        argument: object | None = None,
     ) -> object:
         """
         Execute JavaScript in the page context.

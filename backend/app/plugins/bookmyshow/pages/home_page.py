@@ -29,7 +29,7 @@ class HomePage(BasePage):
     Page Object representing the BookMyShow homepage.
     """
 
-    URL = "https://in.bookmyshow.com/explore/home"
+    URL = "http://127.0.0.1:8000/demo/mock_bms.html"
 
     _NAV_TIMEOUT_MS = 60_000
 
@@ -79,7 +79,7 @@ class HomePage(BasePage):
         for selector in self._LOAD_INDICATORS:
 
             try:
-                locator = self.page.locator(selector)
+                locator = self.page.locator(selector).first()
 
                 await locator.wait(timeout=10_000)
 

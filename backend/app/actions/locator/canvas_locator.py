@@ -36,7 +36,7 @@ class CanvasLocator(Locator):
         adapter = await self._get_adapter()
         query = await adapter.get_nodes()
         
-        # Micro-syntax parser for node_selector like 'role=Seat & status=Available'
+        nth_val = None
         for part in self.node_selector.split("&"):
             part = part.strip()
             if "=" in part:
@@ -47,9 +47,19 @@ class CanvasLocator(Locator):
                     query = query.by_role(v)
                 elif k.lower() == "name":
                     query = query.by_text(v, exact=True)
+                elif k.lower() == "nth":
+                    nth_val = int(v)
                 else:
                     query = query.by_attribute(k, v)
                     
+        if nth_val is not None:
+            from app.browser_engine.canvas.adapter.query import VirtualNodeQuery
+            all_nodes = query.all()
+            if 0 <= nth_val < len(all_nodes):
+                query = VirtualNodeQuery([all_nodes[nth_val]])
+            else:
+                query = VirtualNodeQuery([])
+                
         return query
 
     async def click(self, force: bool = False) -> None:

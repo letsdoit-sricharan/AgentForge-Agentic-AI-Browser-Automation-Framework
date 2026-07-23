@@ -59,4 +59,4 @@ class SearchMovieStep(BaseBookMyShowStep):
         ):
             raise RuntimeError(
                 f"Unable to select movie '{request.movie}'."
-            )
+            )

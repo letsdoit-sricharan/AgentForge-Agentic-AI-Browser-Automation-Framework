@@ -36,11 +36,12 @@ class TheatrePage(BasePage):
         """
         Select a specific date for the movie.
         """
-        selector = self.DATE_FILTER_TEMPLATE.format(show_date)
-        
-        date_locator = self.page.locator(selector)
-        await date_locator.wait()
+        # Use data-date attribute for precision; fall back to text match
+        selector = f'button[data-date="{show_date}"]'
+        date_locator = self.page.locator(selector).first()
+        await date_locator.wait(timeout=10_000)
         await ClickAction(locator=date_locator).execute(self.page)
+
 
     async def select_theatre_and_show(self, theatre: str, time: str) -> None:
         """

@@ -3,25 +3,27 @@ Purpose:
     Workflow step that selects a theatre on BookMyShow.
 
 Responsibilities:
-    - Navigate to the theatre listing.
-    - Select the preferred theatre.
+    - Select the preferred theatre and show time.
 
 Does NOT:
     - Import Playwright.
-    - Contain page selectors (pending real-selector implementation).
+    - Contain page selectors.
 """
 
 from __future__ import annotations
 
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
+from app.plugins.bookmyshow.models.booking_request import BookingRequest
+from app.plugins.bookmyshow.pages.theatre_page import TheatrePage
 from app.plugins.bookmyshow.steps.base_step import BaseBookMyShowStep
+
+_DEFAULT_THEATRE = "PVR: Phoenix Palladium"
+_DEFAULT_TIME = "07:30 PM"
 
 
 class ChooseTheatreStep(BaseBookMyShowStep):
     """
     Workflow step: select the preferred theatre from the listing.
-
-    TODO: Implement with real BookMyShow selectors in the plugin completion phase.
     """
 
     @property
@@ -36,7 +38,8 @@ class ChooseTheatreStep(BaseBookMyShowStep):
         self,
         context: WorkflowContext,
     ) -> None:
-        raise NotImplementedError(
-            "ChooseTheatreStep.perform() requires real BookMyShow selectors. "
-            "Implement in the plugin completion phase."
-        )
+        request: BookingRequest = context.input_data["booking_request"]
+        theatre = request.preferred_theatre or _DEFAULT_THEATRE
+        time = request.preferred_time or _DEFAULT_TIME
+        page = TheatrePage(context)
+        await page.select_theatre_and_show(theatre, time)

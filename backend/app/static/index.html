@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentForge Demo - BookMyShow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AgentForge</h1>
+            <p>Phase 10.7 Demo Application</p>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <h2>Book a Ticket</h2>
+                <form id="booking-form">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" value="Mumbai" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="movie">Movie</label>
+                        <input type="text" id="movie" name="movie" value="Deadpool & Wolverine" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="show_date">Date</label>
+                        <input type="date" id="show_date" name="show_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="preferred_theatre">Preferred Theatre (Optional)</label>
+                        <input type="text" id="preferred_theatre" name="preferred_theatre">
+                    </div>
+                    <div class="form-group">
+                        <label for="preferred_time">Preferred Time (Optional)</label>
+                        <input type="text" id="preferred_time" name="preferred_time">
+                    </div>
+                    <div class="form-group">
+                        <label for="seat_preference">Seat Preference</label>
+                        <select id="seat_preference" name="seat_preference">
+                            <option value="">Any</option>
+                            <option value="RECLINER">Recliner</option>
+                            <option value="PRIME">Prime</option>
+                            <option value="EXECUTIVE">Executive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket_count">Number of Tickets</label>
+                        <input type="number" id="ticket_count" name="ticket_count" min="1" max="10" value="2" required>
+                    </div>
+                    <button type="submit" id="submit-btn">Run Workflow</button>
+                </form>
+            </section>
+
+            <section class="status-section">
+                <h2>Execution Status</h2>
+                <div class="status-indicator">
+                    <span id="status-badge" class="badge idle">IDLE</span>
+                    <span id="request-id"></span>
+                </div>
+                
+                <div class="terminal">
+                    <pre id="execution-logs">Waiting for request...</pre>
+                </div>
+
+                <div id="result-container" class="hidden">
+                    <h3>Result</h3>
+                    <pre id="result-data"></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Set default date to today + 1 day
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('show_date').valueAsDate = tomorrow;
+    </script>
+</body>
+</html>

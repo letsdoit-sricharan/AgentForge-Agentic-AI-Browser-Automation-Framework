@@ -150,3 +150,11 @@ class Locator(ABC):
             selector: CSS or text selector.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    async def bounding_box(self) -> dict | None:
+        """
+        Get the bounding box of the element.
+        Returns a dictionary with x, y, width, height, or None if not visible.
+        """
+        raise NotImplementedError

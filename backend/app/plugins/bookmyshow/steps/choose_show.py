@@ -1,27 +1,25 @@
 """
 Purpose:
-    Workflow step that selects a specific show/screening on BookMyShow.
+    Workflow step that accepts the terms and conditions popup on BookMyShow.
 
 Responsibilities:
-    - Navigate to the show listing.
-    - Select the target show time.
+    - Accept the terms and conditions popup to proceed to seat selection.
 
 Does NOT:
     - Import Playwright.
-    - Contain page selectors (pending real-selector implementation).
+    - Contain page selectors.
 """
 
 from __future__ import annotations
 
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
+from app.plugins.bookmyshow.pages.theatre_page import TheatrePage
 from app.plugins.bookmyshow.steps.base_step import BaseBookMyShowStep
 
 
 class ChooseShowStep(BaseBookMyShowStep):
     """
-    Workflow step: select the specific show/screening time.
-
-    TODO: Implement with real BookMyShow selectors in the plugin completion phase.
+    Workflow step: accept terms/conditions to confirm the show selection.
     """
 
     @property
@@ -36,7 +34,5 @@ class ChooseShowStep(BaseBookMyShowStep):
         self,
         context: WorkflowContext,
     ) -> None:
-        raise NotImplementedError(
-            "ChooseShowStep.perform() requires real BookMyShow selectors. "
-            "Implement in the plugin completion phase."
-        )
+        page = TheatrePage(context)
+        await page.accept_terms()
