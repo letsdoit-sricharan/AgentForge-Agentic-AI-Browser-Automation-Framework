@@ -36,9 +36,8 @@ async def test_workflow_executor():
 
     context = ExecutionContext(
         request=ExecutionRequest(
-            plugin_context=None,
             plugin="bookmyshow",
-            task="book_ticket",
+            workflow="book_ticket",
         ),
         metadata=ExecutionMetadata(),
         execution_state=ExecutionState("exec-1"),

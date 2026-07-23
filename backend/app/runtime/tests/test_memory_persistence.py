@@ -18,9 +18,8 @@ def create_context() -> ExecutionContext:
 
     return ExecutionContext(
         request=ExecutionRequest(
-            plugin_context=None,
             plugin="bookmyshow",
-            task="memory_test",
+            workflow="memory_test",
         ),
         metadata=ExecutionMetadata(),
         execution_state=ExecutionState(
