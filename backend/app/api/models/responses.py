@@ -8,7 +8,7 @@ a consistent, versioned contract for API consumers.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -58,7 +58,7 @@ class WorkflowResultPayload(BaseModel):
         default_factory=dict,
         description="Structured output produced by the workflow.",
     )
-    error: str | None = Field(None, description="Error detail if the workflow failed.")
+    error: Optional[str] = Field(None, description="Error detail if the workflow failed.")
 
 
 class BookingStatusResponse(BaseModel):
@@ -84,7 +84,7 @@ class BookingStatusResponse(BaseModel):
     """
 
     status: BookingStatus = Field(..., description="Current lifecycle state of the job.")
-    result: WorkflowResultPayload | None = Field(
+    result: Optional[WorkflowResultPayload] = Field(
         None,
         description="Workflow outcome — populated once the job finishes.",
     )

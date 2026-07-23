@@ -3,6 +3,7 @@ Base exception hierarchy for the Agent Runtime.
 
 All runtime-specific exceptions should inherit from AgentRuntimeError.
 """
+from __future__ import annotations
 
 
 class AgentRuntimeError(Exception):

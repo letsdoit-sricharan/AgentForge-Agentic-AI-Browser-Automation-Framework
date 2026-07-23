@@ -7,7 +7,7 @@ Represents a request submitted to the Agent Runtime.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
@@ -35,5 +35,5 @@ class ExecutionRequest:
     request_id: str = field(default_factory=lambda: str(uuid4()))
 
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )

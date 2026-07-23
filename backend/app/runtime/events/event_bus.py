@@ -6,12 +6,13 @@ Provides publish/subscribe functionality for runtime events.
 
 from __future__ import annotations
 
+from typing import Union
 from app.runtime.events.browser_event import BrowserEvent
 from app.runtime.events.event_handlers import EventHandler
 from app.runtime.events.runtime_event import RuntimeEvent
 from app.runtime.events.workflow_event import WorkflowEvent
 
-Event = RuntimeEvent | BrowserEvent | WorkflowEvent
+Event = Union[RuntimeEvent, BrowserEvent, WorkflowEvent]
 
 
 class EventBus:

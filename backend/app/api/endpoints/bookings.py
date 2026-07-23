@@ -15,10 +15,12 @@ from __future__ import annotations
 
 import logging
 from datetime import date
-from typing import Any
+from typing import Any, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status
+from fastapi.responses import StreamingResponse
+import asyncio
 from pydantic import BaseModel, Field
 
 from app.api.models.responses import (
@@ -40,6 +42,8 @@ from app.plugins.manager.plugin_manager import PluginManager
 from app.plugins.registry.plugin_registry import PluginRegistry
 from app.runtime.orchestrator.execution_orchestrator import ExecutionOrchestrator
 from app.runtime.orchestrator.models import OrchestratedRequest
+from app.runtime.events.global_bus import get_execution_events
+from app.runtime.events.event_types import WorkflowEventType
 
 logger = logging.getLogger(__name__)
 
@@ -83,13 +87,13 @@ class BookingInput(BaseModel):
     city: str = Field(..., description="City in which to search for the movie.")
     movie: str = Field(..., description="Movie title to book.")
     show_date: date = Field(..., description="Date of the desired show (YYYY-MM-DD).")
-    preferred_time: str | None = Field(
+    preferred_time: Optional[str] = Field(
         None, description="Preferred show time, e.g. '07:30 PM'."
     )
-    preferred_theatre: str | None = Field(
+    preferred_theatre: Optional[str] = Field(
         None, description="Preferred theatre name."
     )
-    seat_preference: str | None = Field(
+    seat_preference: Optional[str] = Field(
         None, description="Seating preference, e.g. 'front', 'back', 'any'."
     )
     ticket_count: int = Field(1, ge=1, le=10, description="Number of tickets to book.")
@@ -142,7 +146,7 @@ async def _execute_booking(request_id: str, booking_input: BookingInput) -> None
         orch_req = OrchestratedRequest(
             plugin_name="bookmyshow",
             workflow_name="booking_workflow",
-            input_data={"booking_request": bms_request},
+            input_data={"booking_request": bms_request, "request_id": request_id},
         )
 
         plugin_context = PluginContext(
@@ -241,7 +245,7 @@ async def get_booking_status(request_id: str) -> BookingStatusResponse:
     state = _EXECUTION_STATE[request_id]
     raw_result = state.get("result")
 
-    result_payload: WorkflowResultPayload | None = None
+    result_payload: Optional[WorkflowResultPayload] = None
     if raw_result is not None:
         result_payload = WorkflowResultPayload(
             success=raw_result.get("success", False),
@@ -255,3 +259,80 @@ async def get_booking_status(request_id: str) -> BookingStatusResponse:
         result=result_payload,
         errors=state.get("errors", []),
     )
+
+
+@router.get(
+    "/{request_id}/events",
+    summary="Get workflow events",
+)
+async def get_booking_events(request_id: str) -> list[dict[str, Any]]:
+    """Get all workflow events for this execution."""
+    events = get_execution_events(request_id)
+    out = []
+    for e in events:
+        status_map = {
+            WorkflowEventType.WORKFLOW_STARTED: "running",
+            WorkflowEventType.TASK_STARTED: "running",
+            WorkflowEventType.TASK_COMPLETED: "completed",
+            WorkflowEventType.TASK_FAILED: "failed",
+            WorkflowEventType.WORKFLOW_COMPLETED: "completed",
+            WorkflowEventType.WORKFLOW_FAILED: "failed"
+        }
+        status_str = status_map.get(e.event_type, "pending")
+        step_name = e.task_name or e.name
+        out.append({
+            "step": step_name,
+            "status": status_str,
+            "timestamp": e.timestamp.isoformat(),
+            "message": e.payload.get("message"),
+            "event_type": e.event_type,
+        })
+    return out
+
+
+@router.get(
+    "/{request_id}/stream",
+    summary="Stream workflow events",
+)
+async def get_booking_stream(request_id: str):
+    """SSE stream of workflow events."""
+    async def event_generator():
+        last_index = 0
+        while True:
+            events = get_execution_events(request_id)
+            if events:
+                for i in range(last_index, len(events)):
+                    e = events[i]
+                    status_map = {
+                        WorkflowEventType.WORKFLOW_STARTED: "running",
+                        WorkflowEventType.TASK_STARTED: "running",
+                        WorkflowEventType.TASK_COMPLETED: "completed",
+                        WorkflowEventType.TASK_FAILED: "failed",
+                        WorkflowEventType.WORKFLOW_COMPLETED: "completed",
+                        WorkflowEventType.WORKFLOW_FAILED: "failed"
+                    }
+                    status_str = status_map.get(e.event_type, "pending")
+                    step_name = e.task_name or e.name
+                    import json
+                    data = json.dumps({
+                        "step": step_name,
+                        "status": status_str,
+                        "timestamp": e.timestamp.isoformat(),
+                        "message": e.payload.get("message"),
+                        "event_type": e.event_type,
+                    })
+                    yield f"event: workflow\ndata: {data}\n\n"
+                    
+                last_index = len(events)
+                last_event = events[-1]
+                if last_event.event_type in (WorkflowEventType.WORKFLOW_COMPLETED, WorkflowEventType.WORKFLOW_FAILED):
+                    break
+            
+            state = _EXECUTION_STATE.get(request_id)
+            if state and state["status"] in (BookingStatus.COMPLETED, BookingStatus.FAILED):
+                if len(events) == last_index:
+                    break
+                    
+            await asyncio.sleep(0.5)
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

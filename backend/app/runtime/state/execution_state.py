@@ -5,7 +5,7 @@ Execution state model.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from .execution_status import ExecutionStatus
 from .state_machine import StateMachine
@@ -26,7 +26,7 @@ class ExecutionState:
     current_task: str | None = None
 
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )
 
     started_at: datetime | None = None
@@ -34,7 +34,7 @@ class ExecutionState:
     completed_at: datetime | None = None
 
     updated_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )
 
     last_error: str | None = None
@@ -50,7 +50,7 @@ class ExecutionState:
         )
 
         self.status = status
-        self.updated_at = datetime.now(UTC)
+        self.updated_at = datetime.now(timezone.utc)
 
         if status == ExecutionStatus.RUNNING and self.started_at is None:
             self.started_at = self.updated_at
@@ -79,7 +79,7 @@ class ExecutionState:
         Updates the currently executing task.
         """
         self.current_task = task_name
-        self.updated_at = datetime.now(UTC)
+        self.updated_at = datetime.now(timezone.utc)
 
     def set_error(
         self,
@@ -89,4 +89,4 @@ class ExecutionState:
         Stores the latest execution error.
         """
         self.last_error = message
-        self.updated_at = datetime.now(UTC)
+        self.updated_at = datetime.now(timezone.utc)

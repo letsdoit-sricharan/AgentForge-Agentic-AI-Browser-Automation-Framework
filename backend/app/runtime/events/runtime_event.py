@@ -8,7 +8,7 @@ Agent Runtime.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
@@ -36,7 +36,7 @@ class RuntimeEvent:
     )
 
     timestamp: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )
 
     @property

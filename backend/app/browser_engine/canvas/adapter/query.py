@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, Callable, List
 
 from app.browser_engine.interfaces.virtual_node import VirtualNode

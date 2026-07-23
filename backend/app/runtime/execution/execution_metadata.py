@@ -5,7 +5,7 @@ Execution metadata.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
 
@@ -25,7 +25,7 @@ class ExecutionMetadata:
     completed_at: datetime | None = None
 
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )
 
     source: str = "runtime"

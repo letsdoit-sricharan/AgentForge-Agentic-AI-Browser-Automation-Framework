@@ -1,3 +1,4 @@
+from __future__ import annotations
 from app.browser_engine.canvas.adapter.canvas_adapter import CanvasAdapter
 from app.browser_engine.interfaces.locator import Locator
 from app.browser_engine.interfaces.page import Page

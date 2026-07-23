@@ -19,6 +19,9 @@ from __future__ import annotations
 from app.plugin_framework.workflow.workflow import Workflow
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugin_framework.workflow.workflow_result import WorkflowResult
+from app.runtime.events.global_bus import global_bus
+from app.runtime.events.workflow_event import WorkflowEvent
+from app.runtime.events.event_types import WorkflowEventType
 from app.plugins.bookmyshow.models.booking_request import BookingRequest
 from app.plugins.bookmyshow.steps.choose_date import ChooseDateStep
 from app.plugins.bookmyshow.steps.choose_seats import ChooseSeatsStep
@@ -59,16 +62,33 @@ class BookingWorkflow(Workflow):
         return "booking_workflow"
 
     async def execute(
-    self,
-    context: WorkflowContext,
-) -> WorkflowResult:
+        self,
+        context: WorkflowContext,
+    ) -> WorkflowResult:
         """
         Execute the booking workflow.
         """
 
         request = context.input_data.get("booking_request")
+        exec_id = context.input_data.get("request_id", "unknown")
+
+        def emit(event_type: WorkflowEventType, task_name: str | None = None, message: str | None = None):
+            payload = {"plugin_name": "BookMyShow"}
+            if message:
+                payload["message"] = message
+            global_bus.publish(WorkflowEvent(
+                event_type=event_type,
+                execution_id=exec_id,
+                workflow_id=self.name,
+                source="booking_workflow",
+                task_name=task_name,
+                payload=payload
+            ))
+
+        emit(WorkflowEventType.WORKFLOW_STARTED)
 
         if not isinstance(request, BookingRequest):
+            emit(WorkflowEventType.WORKFLOW_FAILED, message="Booking request not found.")
             return WorkflowResult(
                 success=False,
                 message="Booking request not found.",
@@ -77,24 +97,28 @@ class BookingWorkflow(Workflow):
         validation = self._validator.validate(request)
 
         if not validation.valid:
+            emit(WorkflowEventType.WORKFLOW_FAILED, message=validation.message)
             return WorkflowResult(
                 success=False,
                 message=validation.message,
             )
 
         for step in self.steps:
-
+            emit(WorkflowEventType.TASK_STARTED, task_name=step.name)
             result = await step.execute(context)
 
             if not result.success:
+                emit(WorkflowEventType.TASK_FAILED, task_name=step.name, message=result.message)
+                msg = f"Workflow failed at step '{step.name}': {result.message}"
+                emit(WorkflowEventType.WORKFLOW_FAILED, message=msg)
                 return WorkflowResult(
                     success=False,
-                    message=(
-                        f"Workflow failed at step "
-                        f"'{step.name}': {result.message}"
-                    ),
+                    message=msg,
                 )
+            
+            emit(WorkflowEventType.TASK_COMPLETED, task_name=step.name)
 
+        emit(WorkflowEventType.WORKFLOW_COMPLETED, message="Booking workflow completed successfully.")
         return WorkflowResult(
             success=True,
             message="Booking workflow completed successfully.",

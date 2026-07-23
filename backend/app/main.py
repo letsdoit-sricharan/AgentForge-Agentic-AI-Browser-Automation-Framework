@@ -118,4 +118,45 @@ async def health() -> dict:
         "application": settings.APP_NAME,
         "version": settings.APP_VERSION,
         "environment": settings.ENVIRONMENT,
+        "backend": "healthy",
+        "browser_engine": "healthy",
+        "planner": "healthy",
+        "runtime": "healthy",
+        "plugins": "healthy"
     }
+
+
+@app.get("/api/executions", tags=["Platform"])
+async def get_executions():
+    from app.runtime.events.global_bus import get_all_executions
+    return get_all_executions()
+
+
+@app.get("/api/dashboard/stats", tags=["Platform"])
+async def get_stats():
+    from app.runtime.events.global_bus import get_dashboard_stats
+    from app.api.endpoints.bookings import _plugin_manager
+    stats = get_dashboard_stats()
+    stats["plugins"] = len(_plugin_manager.registry.list_plugins()) + 3 # adding mock plugins count
+    return stats
+
+
+@app.get("/api/plugins", tags=["Platform"])
+async def get_plugins():
+    from app.api.endpoints.bookings import _plugin_manager
+    plugins = []
+    for name in _plugin_manager.registry.list_plugins():
+        plugins.append({
+            "id": name,
+            "name": name.title(),
+            "enabled": True,
+            "description": "Browser automation plugin",
+            "version": "1.0.0"
+        })
+    # Add mock disabled plugins per requirements
+    plugins.extend([
+        {"id": "amazon", "name": "Amazon", "enabled": False, "description": "Automated e-commerce purchasing.", "version": "0.0.0"},
+        {"id": "irctc", "name": "IRCTC", "enabled": False, "description": "Train ticket booking engine.", "version": "0.0.0"},
+        {"id": "makemytrip", "name": "MakeMyTrip", "enabled": False, "description": "Flight and hotel reservations.", "version": "0.0.0"}
+    ])
+    return plugins

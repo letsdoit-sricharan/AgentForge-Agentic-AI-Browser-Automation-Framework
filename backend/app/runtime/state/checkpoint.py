@@ -7,7 +7,7 @@ Represents a serializable snapshot of runtime execution.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from .execution_state import ExecutionState
 from .workflow_state import WorkflowState
@@ -32,5 +32,5 @@ class Checkpoint:
     version: int = 1
 
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )

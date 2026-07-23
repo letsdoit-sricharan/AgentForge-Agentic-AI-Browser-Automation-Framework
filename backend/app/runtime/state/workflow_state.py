@@ -7,7 +7,7 @@ Tracks the progress of a workflow execution.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 
 @dataclass()
@@ -30,11 +30,11 @@ class WorkflowState:
     failed_step: str | None = None
 
     created_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )
 
     updated_at: datetime = field(
-        default_factory=lambda: datetime.now(UTC)
+        default_factory=lambda: datetime.now(timezone.utc)
     )
 
     @property
@@ -65,7 +65,7 @@ class WorkflowState:
         Updates the currently executing workflow step.
         """
         self.current_step = step_name
-        self.updated_at = datetime.now(UTC)
+        self.updated_at = datetime.now(timezone.utc)
 
     def complete_step(self) -> None:
         """
@@ -74,7 +74,7 @@ class WorkflowState:
         if self.completed_steps < self.total_steps:
             self.completed_steps += 1
 
-        self.updated_at = datetime.now(UTC)
+        self.updated_at = datetime.now(timezone.utc)
 
     def set_failed_step(
         self,
@@ -84,4 +84,4 @@ class WorkflowState:
         Records the step that caused workflow failure.
         """
         self.failed_step = step_name
-        self.updated_at = datetime.now(UTC)
+        self.updated_at = datetime.now(timezone.utc)

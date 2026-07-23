@@ -1,6 +1,7 @@
 """
 Checkpoint-related exceptions.
 """
+from __future__ import annotations
 
 from .runtime_error import AgentRuntimeError
 

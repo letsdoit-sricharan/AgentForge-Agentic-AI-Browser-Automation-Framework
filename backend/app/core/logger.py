@@ -4,6 +4,7 @@ Centralized logging configuration for AgentForge.
 Every module in the application should import the logger
 defined here instead of creating its own logger.
 """
+from __future__ import annotations
 
 import contextvars
 import sys

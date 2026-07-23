@@ -1,6 +1,7 @@
 """
 Tests for TypeTextAction.
 """
+from __future__ import annotations
 
 import asyncio
 
