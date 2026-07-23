@@ -4,8 +4,8 @@ Tests for text input actions.
 
 import asyncio
 
-from app.actions.element.fill import FillAction
 from app.actions.element.clear import ClearAction
+from app.actions.element.fill import FillAction
 
 
 class DummyLocator:

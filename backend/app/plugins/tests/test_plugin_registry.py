@@ -4,14 +4,14 @@ Tests for PluginRegistry.
 
 import pytest
 
+from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins.exceptions import (
     PluginAlreadyRegisteredError,
     PluginNotFoundError,
 )
-from app.plugins.interfaces import Plugin, PluginMetadata, PluginContext
+from app.plugins.interfaces import Plugin, PluginContext, PluginMetadata
 from app.plugins.models import PluginStatus
 from app.plugins.registry import PluginRegistry
-from app.plugin_framework.workflow.workflow_context import WorkflowContext
 
 
 class DummyPlugin(Plugin):

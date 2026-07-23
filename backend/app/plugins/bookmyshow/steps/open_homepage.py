@@ -17,7 +17,6 @@ from __future__ import annotations
 from app.plugin_framework.steps.step_result import StepResult
 from app.plugin_framework.steps.workflow_step import WorkflowStep
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
-
 from app.plugins.bookmyshow.pages.home_page import HomePage
 
 

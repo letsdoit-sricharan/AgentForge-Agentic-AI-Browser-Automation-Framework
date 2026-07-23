@@ -2,8 +2,8 @@
 Tests for RuntimeEvent.
 """
 
-from app.runtime.events.runtime_event import RuntimeEvent
 from app.runtime.events.event_types import RuntimeEventType
+from app.runtime.events.runtime_event import RuntimeEvent
 
 
 def test_runtime_event():

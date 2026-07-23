@@ -2,7 +2,6 @@
 Tests for PluginContext.
 """
 
-import pytest
 
 from app.plugins.interfaces import PluginContext
 

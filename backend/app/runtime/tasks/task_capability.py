@@ -22,7 +22,7 @@ from enum import Enum, auto
 class TaskCapability(Enum):
     """
     Capabilities that tasks may require.
-    
+
     Used by AI planners to understand what infrastructure or
     permissions are needed to execute a task.
     """
@@ -31,51 +31,51 @@ class TaskCapability(Enum):
     REQUIRES_BROWSER = auto()
     REQUIRES_JAVASCRIPT = auto()
     REQUIRES_COOKIES = auto()
-    
+
     # Authentication capabilities
     REQUIRES_AUTHENTICATION = auto()
     REQUIRES_LOGIN = auto()
     REQUIRES_2FA = auto()
-    
+
     # Payment capabilities
     REQUIRES_PAYMENT = auto()
     REQUIRES_PAYMENT_METHOD = auto()
     REQUIRES_CREDIT_CARD = auto()
-    
+
     # Human interaction capabilities
     REQUIRES_HUMAN_CONFIRMATION = auto()
     REQUIRES_CAPTCHA_SOLVE = auto()
     REQUIRES_OTP = auto()
-    
+
     # Data capabilities
     REQUIRES_USER_DATA = auto()
     REQUIRES_LOCATION = auto()
     REQUIRES_PREFERENCES = auto()
-    
+
     # Network capabilities
     REQUIRES_INTERNET = auto()
     REQUIRES_VPN = auto()
-    
+
     # File capabilities
     REQUIRES_FILE_UPLOAD = auto()
     REQUIRES_FILE_DOWNLOAD = auto()
-    
+
     # Time capabilities
     REQUIRES_REAL_TIME_EXECUTION = auto()
     REQUIRES_SCHEDULED_EXECUTION = auto()
-    
+
     # Resource capabilities
     REQUIRES_HIGH_BANDWIDTH = auto()
     REQUIRES_LONG_EXECUTION_TIME = auto()
-    
+
     # Security capabilities
     REQUIRES_SECURE_CONNECTION = auto()
     REQUIRES_ENCRYPTED_STORAGE = auto()
-    
+
     # Multi-step capabilities
     REQUIRES_STATE_PERSISTENCE = auto()
     REQUIRES_ROLLBACK = auto()
-    
+
     @classmethod
     def get_browser_capabilities(cls) -> set[TaskCapability]:
         """Get all browser-related capabilities."""
@@ -84,7 +84,7 @@ class TaskCapability(Enum):
             cls.REQUIRES_JAVASCRIPT,
             cls.REQUIRES_COOKIES,
         }
-    
+
     @classmethod
     def get_auth_capabilities(cls) -> set[TaskCapability]:
         """Get all authentication-related capabilities."""
@@ -93,7 +93,7 @@ class TaskCapability(Enum):
             cls.REQUIRES_LOGIN,
             cls.REQUIRES_2FA,
         }
-    
+
     @classmethod
     def get_payment_capabilities(cls) -> set[TaskCapability]:
         """Get all payment-related capabilities."""
@@ -102,7 +102,7 @@ class TaskCapability(Enum):
             cls.REQUIRES_PAYMENT_METHOD,
             cls.REQUIRES_CREDIT_CARD,
         }
-    
+
     @classmethod
     def get_human_interaction_capabilities(cls) -> set[TaskCapability]:
         """Get all human interaction capabilities."""

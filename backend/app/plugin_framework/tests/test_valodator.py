@@ -7,8 +7,8 @@ Run:
 
 from typing import Any
 
-from app.plugin_framework.validators.validator import Validator
 from app.plugin_framework.validators.validation_result import ValidationResult
+from app.plugin_framework.validators.validator import Validator
 
 
 class DummyValidator(Validator):

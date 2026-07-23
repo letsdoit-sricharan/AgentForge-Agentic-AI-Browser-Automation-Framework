@@ -37,14 +37,14 @@ class JavaScriptBridge(ABC):
 
     @abstractmethod
     async def add_script_tag(
-        self, 
-        url: str | None = None, 
+        self,
+        url: str | None = None,
         content: str | None = None
     ) -> None:
         """
-        Injects a `<script>` tag into the page. Useful for loading external libraries 
+        Injects a `<script>` tag into the page. Useful for loading external libraries
         or injecting large, reusable client-side functions.
-        
+
         Must provide either `url` or `content`.
         """
         raise NotImplementedError

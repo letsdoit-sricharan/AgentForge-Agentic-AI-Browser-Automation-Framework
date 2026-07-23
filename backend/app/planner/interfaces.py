@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from app.planner.models import Intent, Entity, Goal, PlanningResult
+from app.planner.models import Entity, Goal, Intent, PlanningResult
 from app.runtime.execution.execution_request import ExecutionRequest
+
 
 class IntentRecognizer(ABC):
     @abstractmethod

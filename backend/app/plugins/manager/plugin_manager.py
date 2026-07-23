@@ -25,12 +25,11 @@ from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins.exceptions.plugin_errors import (
     PluginExecutionError,
     PluginInitializationError,
-    PluginNotFoundError,
     PluginStateError,
 )
 from app.plugins.interfaces.plugin_context import PluginContext
 from app.plugins.manager.plugin_loader import PluginLoader
-from app.plugins.models.plugin_state import PluginState, PluginStatus
+from app.plugins.models.plugin_state import PluginState
 from app.plugins.registry.plugin_registry import PluginRegistry
 
 if TYPE_CHECKING:

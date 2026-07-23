@@ -1,4 +1,0 @@
-URL: https://analytics.google.com/g/collect?v=2&tid=G-84T5GTD0PC&gtm=45je67k1v869142316z876179510za20gzb76179510zd76179510&_p=1784708373325&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAGAC&are=1&cid=247559745.1784708376&frm=0&pscdl=noapi&rcb=5&sr=1280x720&uaa=x86&uab=64&uafvl=Chromium%3B149.0.7827.55%7CNot)A%253BBrand%3B24.0.0.0&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=en-us&gaf=2&_s=1&tag_exp=115938465~115938468~118897920~118897930~119773331~119896803&sid=1784708376&sct=1&seg=0&dl=https%3A%2F%2Fin.bookmyshow.com%2Fexplore%2Fhome&dt=Movie%20Tickets%2C%20Plays%2C%20Sports%2C%20Events%20%26%20Cinemas%20nearby%20-%20BookMyShow&_tu=QA&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=3035
-Method: POST
-Content-Type: text/plain
-==================================================

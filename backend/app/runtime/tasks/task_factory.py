@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class TaskFactory:
     """
     Factory for creating Task instances from structured data.
-    
+
     Used by:
     - AI Planner to convert plans to tasks
     - API layer to parse task requests
@@ -49,7 +49,7 @@ class TaskFactory:
     ) -> None:
         """
         Register a Task class for a task type.
-        
+
         Args:
             task_type: Task type identifier
             task_class: Task class to instantiate
@@ -64,17 +64,17 @@ class TaskFactory:
     ) -> Task:
         """
         Create a task instance.
-        
+
         Args:
             task_type: Task type identifier
             **kwargs: Task-specific parameters
-            
+
         Returns:
             Task instance
-            
+
         Raises:
             TaskValidationError: If task creation fails
-            
+
         Example:
             >>> factory.create_task(
             ...     "search_movie",
@@ -88,20 +88,20 @@ class TaskFactory:
                 task_type,
                 [f"Unknown task type: {task_type}"],
             )
-        
+
         task_class = self._task_classes[task_type]
-        
+
         try:
             task = task_class(**kwargs)
-            
+
             # Validate the created task
             is_valid, errors = task.validate()
             if not is_valid:
                 raise TaskValidationError(task_type, errors)
-            
+
             self._logger.debug(f"Created task: {task}")
             return task
-            
+
         except TaskValidationError:
             raise
         except Exception as e:
@@ -116,16 +116,16 @@ class TaskFactory:
     ) -> Task:
         """
         Create a task from dictionary representation.
-        
+
         Args:
             data: Dictionary containing task data
-            
+
         Returns:
             Task instance
-            
+
         Raises:
             TaskValidationError: If task creation fails
-            
+
         Example:
             >>> factory.create_from_dict({
             ...     "task_type": "search_movie",
@@ -139,7 +139,7 @@ class TaskFactory:
                 "unknown",
                 ["Missing required field: task_type"],
             )
-        
+
         task_type = data.pop("task_type")
         return self.create_task(task_type, **data)
 
@@ -149,10 +149,10 @@ class TaskFactory:
     ) -> bool:
         """
         Check if a task type is registered.
-        
+
         Args:
             task_type: Task type identifier
-            
+
         Returns:
             True if task type is registered
         """
@@ -161,7 +161,7 @@ class TaskFactory:
     def get_registered_task_types(self) -> list[str]:
         """
         Get all registered task types.
-        
+
         Returns:
             List of task type identifiers
         """
@@ -170,7 +170,7 @@ class TaskFactory:
     def clear(self) -> None:
         """
         Clear all registered task classes.
-        
+
         Used primarily for testing.
         """
         self._task_classes.clear()

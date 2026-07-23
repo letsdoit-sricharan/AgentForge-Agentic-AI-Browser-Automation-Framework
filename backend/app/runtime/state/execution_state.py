@@ -5,7 +5,7 @@ Execution state model.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from .execution_status import ExecutionStatus
 from .state_machine import StateMachine

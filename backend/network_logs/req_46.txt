@@ -1,5 +1,0 @@
-URL: https://eu1.clevertap-prod.com/a?t=96&type=push&d=N4IgLgngDgpiBcIYDcYDswgDROWAcgIYC2ciA7gF4BOA1gPoBmMYAxgBba5gAihYhBKEzwALAF8cASwAmCEAA4AbAC0AtAHYlGtQE5tKrlADmCAIw5CjISAA2UgEbzyMB2oDOM2muQAmAHQa%2FqJG1AD2YGGsYbby7GBgUO4gkiAA6ioASgDS9ADCAIIAsgAKNuRSxFAIAAw4FWC2rAgA2gC69e7N8HUg5IzdwKnkUULDaDJdtfUTA2MzMqPwQ%2BLiQAA%3D&rn=3&i=1784708374&sn=0&s=1784708372&gc=2dd76c018b6344ce82ee04b1f101f5fc&tries=1&origin=https%3A%2F%2Fin.bookmyshow.com&useIP=true&r=1784708375638
-Method: GET
-Content-Type: text/javascript;charset=utf-8
-==================================================
-$WZRK_WR.s('2dd76c018b6344ce82ee04b1f101f5fc',1784708372,false,3);$WZRK_WR.tr({"arp":{"j_n":"Zw==","i_n":"Zm1keQcEAgJi","d_ts":0,"dh":0,"v":2,"j_s":"{}","id":"86Z-767-967Z","r_ts":1784708373},"wtq":[],"wndtq":[]});

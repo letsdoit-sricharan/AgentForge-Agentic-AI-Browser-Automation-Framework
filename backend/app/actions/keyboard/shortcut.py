@@ -13,7 +13,6 @@ from app.actions.base_action import BaseAction
 from app.actions.exceptions import ActionExecutionError
 from app.browser_engine.interfaces.page import Page
 
-
 _SHORTCUTS: dict[str, tuple[str, ...]] = {
     "copy": ("Control", "C"),
     "paste": ("Control", "V"),

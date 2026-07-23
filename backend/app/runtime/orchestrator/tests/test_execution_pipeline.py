@@ -4,12 +4,12 @@ Tests for ExecutionPipeline.
 
 import pytest
 
+from app.runtime.orchestrator.exceptions import OrchestrationPipelineError
 from app.runtime.orchestrator.execution_pipeline import (
     ExecutionPipeline,
     PipelineContext,
     PipelineStage,
 )
-from app.runtime.orchestrator.exceptions import OrchestrationPipelineError
 
 
 class TestExecutionPipeline:

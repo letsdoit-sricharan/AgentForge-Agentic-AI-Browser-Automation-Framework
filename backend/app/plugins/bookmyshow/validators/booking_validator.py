@@ -18,7 +18,6 @@ from app.plugin_framework.validators import (
     ValidationResult,
     Validator,
 )
-
 from app.plugins.bookmyshow.models.booking_request import (
     BookingRequest,
 )

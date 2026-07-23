@@ -11,7 +11,6 @@ from app.runtime.events.event_handlers import EventHandler
 from app.runtime.events.runtime_event import RuntimeEvent
 from app.runtime.events.workflow_event import WorkflowEvent
 
-
 Event = RuntimeEvent | BrowserEvent | WorkflowEvent
 
 

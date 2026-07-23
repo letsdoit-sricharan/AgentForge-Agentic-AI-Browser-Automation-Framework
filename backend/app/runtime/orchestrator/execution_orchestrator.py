@@ -30,7 +30,6 @@ from typing import TYPE_CHECKING, Any
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins.interfaces.plugin_context import PluginContext
 from app.runtime.orchestrator.exceptions import (
-    ExecutionPreparationError,
     OrchestrationPipelineError,
     PluginResolutionError,
     WorkflowContextCreationError,
@@ -56,7 +55,7 @@ logger = logging.getLogger(__name__)
 class ExecutionOrchestrator:
     """
     Orchestrates execution from request to result.
-    
+
     This is the primary entry point for executing plugins in AgentForge.
     It coordinates all the moving parts while remaining plugin-independent.
     """
@@ -144,10 +143,10 @@ class ExecutionOrchestrator:
             # Execute the workflow through the plugin with retries for RecoverableError
             from app.browser_engine.exceptions.browser_errors import RecoverableError
             from app.core.metrics import metrics
-            
+
             max_retries = 3
             workflow_result = None
-            
+
             for attempt in range(1, max_retries + 1):
                 try:
                     workflow_result = await self._execute_workflow(
@@ -219,7 +218,7 @@ class ExecutionOrchestrator:
             # Unexpected errors
             completed_at = datetime.utcnow()
             execution_time = (completed_at - started_at).total_seconds()
-            
+
             from app.core.metrics import metrics
             metrics.increment("orchestrator.execute.error.unexpected")
 
@@ -227,27 +226,30 @@ class ExecutionOrchestrator:
                 f"Unexpected error executing request {request.request_id}: {e}",
                 exc_info=True,
             )
-            
+
             # Failure Diagnostics
             try:
-                from app.browser_engine.models.screenshot_options import ScreenshotOptions, ImageType
-                from pathlib import Path
                 import time
-                import os
-                
+                from pathlib import Path
+
+                from app.browser_engine.models.screenshot_options import (
+                    ImageType,
+                    ScreenshotOptions,
+                )
+
                 diag_dir = Path("diagnostics")
                 diag_dir.mkdir(exist_ok=True)
                 timestamp = int(time.time())
-                
+
                 shot_path = diag_dir / f"fail_{request.request_id}_{timestamp}.png"
                 dom_path = diag_dir / f"fail_{request.request_id}_{timestamp}.html"
-                
+
                 await page.screenshot(ScreenshotOptions(path=shot_path, full_page=True, image_type=ImageType.PNG, quality=None))
-                
+
                 dom = await page.evaluate("document.documentElement.outerHTML")
                 with open(dom_path, "w", encoding="utf-8") as f:
                     f.write(str(dom))
-                
+
                 self._logger.info(f"Captured failure diagnostics to {diag_dir}")
             except Exception as diag_e:
                 self._logger.error(f"Failed to capture diagnostics: {diag_e}")

@@ -14,26 +14,28 @@ Must NOT do:
 """
 
 from __future__ import annotations
+
 from pathlib import Path
 
 from playwright.async_api import (
     Page as PlaywrightPageInstance,
+)
+from playwright.async_api import (
     TimeoutError as PlaywrightTimeoutError,
 )
 
 from app.browser_engine.exceptions.browser_errors import PageError
 from app.browser_engine.exceptions.navigation_errors import NavigationError
 from app.browser_engine.exceptions.timeout_errors import BrowserTimeoutError
-from app.browser_engine.implementations.playwright.playwright_locator import (
-    PlaywrightLocator,
+from app.browser_engine.implementations.playwright.playwright_javascript_bridge import (
+    PlaywrightJavaScriptBridge,
 )
 from app.browser_engine.interfaces.locator import Locator
 from app.browser_engine.interfaces.page import Page
+from app.browser_engine.javascript.bridge import JavaScriptBridge
 from app.browser_engine.models.load_state import LoadState
 from app.browser_engine.models.navigation_options import NavigationOptions
 from app.browser_engine.models.screenshot_options import ScreenshotOptions
-from app.browser_engine.javascript.bridge import JavaScriptBridge
-from app.browser_engine.implementations.playwright.playwright_javascript_bridge import PlaywrightJavaScriptBridge
 
 
 class PlaywrightPage(Page):
@@ -96,7 +98,9 @@ class PlaywrightPage(Page):
         return self._page.url
 
     def locator(self, selector: str) -> Locator:
-        # Avoid circular import
+        """
+        Return a Locator for the given CSS/ARIA selector.
+        """
         from app.browser_engine.implementations.playwright.playwright_locator import (
             PlaywrightLocator,
         )

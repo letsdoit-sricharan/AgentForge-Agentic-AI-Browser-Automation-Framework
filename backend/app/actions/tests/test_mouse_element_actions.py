@@ -6,8 +6,8 @@ import asyncio
 
 from app.actions.element.click import ClickAction
 from app.actions.element.double_click import DoubleClickAction
-from app.actions.element.right_click import RightClickAction
 from app.actions.element.hover import HoverAction
+from app.actions.element.right_click import RightClickAction
 
 
 class DummyLocator:

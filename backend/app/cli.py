@@ -1,7 +1,6 @@
-import typer
-import asyncio
-from typing import Optional
 from pathlib import Path
+
+import typer
 
 app = typer.Typer(help="AgentForge Command Line Interface")
 
@@ -10,7 +9,6 @@ def run(prompt: str, headless: bool = True):
     """
     Run an agent workflow from a prompt.
     """
-    from app.agent.loop import DefaultAgent
     # ... mock init for now
     typer.echo(f"Running prompt: {prompt}")
 
@@ -23,7 +21,7 @@ def validate(plugin_name: str):
     if not plugin_dir.exists():
         typer.secho(f"Plugin {plugin_name} not found.", fg=typer.colors.RED)
         raise typer.Exit(1)
-        
+
     # Check for direct playwright imports in pages/
     pages_dir = plugin_dir / "pages"
     if pages_dir.exists():
@@ -32,29 +30,32 @@ def validate(plugin_name: str):
             if "playwright" in text:
                 typer.secho(f"Validation failed: Playwright imported in {py_file}", fg=typer.colors.RED)
                 raise typer.Exit(1)
-                
+
     typer.secho(f"Plugin {plugin_name} validated successfully.", fg=typer.colors.GREEN)
 
 @app.command()
 def doctor():
     """
-    Validate the environment.
+    Validate the AgentForge environment by checking that all required
+    dependencies are installed and importable.
     """
-    try:
-        import playwright
-        import typer
-        import sqlalchemy
-        typer.secho("Environment is healthy.", fg=typer.colors.GREEN)
-    except ImportError as e:
-        typer.secho(f"Environment check failed: {e}", fg=typer.colors.RED)
+    import importlib.util
+
+    dependencies = ["playwright", "sqlalchemy", "fastapi", "pydantic"]
+    missing = [d for d in dependencies if importlib.util.find_spec(d) is None]
+    if missing:
+        typer.secho(f"Missing dependencies: {', '.join(missing)}", fg=typer.colors.RED)
+        raise typer.Exit(1)
+    typer.secho("Environment is healthy. All dependencies found.", fg=typer.colors.GREEN)
 
 @app.command()
 def test(plugin_name: str):
     """
     Run tests for a specific plugin.
     """
-    import pytest
     import sys
+
+    import pytest
     result = pytest.main([f"app/plugins/{plugin_name}/tests/"])
     sys.exit(result)
 
@@ -63,16 +64,15 @@ def create_plugin(name: str):
     """
     Scaffold a new plugin.
     """
-    import os
     from cookiecutter.main import cookiecutter
     template_dir = Path(__file__).parent.parent / "templates" / "plugin_template"
     if not template_dir.exists():
         typer.secho("Template not found.", fg=typer.colors.RED)
         raise typer.Exit(1)
-        
+
     output_dir = Path("app/plugins")
     output_dir.mkdir(exist_ok=True)
-    
+
     cookiecutter(
         str(template_dir),
         no_input=True,

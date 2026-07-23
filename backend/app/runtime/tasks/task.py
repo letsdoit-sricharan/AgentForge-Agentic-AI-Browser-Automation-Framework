@@ -28,10 +28,10 @@ from uuid import uuid4
 class Task(ABC):
     """
     Base class for all tasks.
-    
+
     A Task represents a business objective that needs to be accomplished,
     without specifying HOW it should be done.
-    
+
     Examples:
         - SearchMovieTask: Find a movie
         - SelectSeatsTask: Choose theater seats
@@ -51,13 +51,13 @@ class Task(ABC):
 
     # Task metadata
     task_id: str = field(default_factory=lambda: str(uuid4()))
-    
+
     # Task priority (higher = more urgent)
     priority: int = 0
-    
+
     # Correlation ID for tracking related tasks
     correlation_id: str | None = None
-    
+
     # Additional metadata
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -66,9 +66,9 @@ class Task(ABC):
     def task_type(self) -> str:
         """
         Return the task type identifier.
-        
+
         This is used by the TaskRegistry to match tasks to plugins.
-        
+
         Examples:
             "search_movie"
             "select_seats"
@@ -80,14 +80,14 @@ class Task(ABC):
     def validate(self) -> tuple[bool, list[str]]:
         """
         Validate task inputs.
-        
+
         Returns:
             Tuple of (is_valid, error_messages)
-            
+
         Example:
             >>> task.validate()
             (True, [])  # Valid
-            
+
             >>> task.validate()
             (False, ["Movie name is required", "City is required"])  # Invalid
         """
@@ -97,13 +97,13 @@ class Task(ABC):
     def to_dict(self) -> dict[str, Any]:
         """
         Serialize task to dictionary.
-        
+
         This is used for:
         - Logging
         - Storage
         - API responses
         - AI planner integration
-        
+
         Returns:
             Dictionary representation of the task
         """

@@ -1,5 +1,6 @@
 from app.browser_engine.exceptions.browser_errors import BrowserEngineError
 
+
 class CanvasAdapterError(BrowserEngineError):
     """Base exception for Canvas Adapter errors."""
     pass

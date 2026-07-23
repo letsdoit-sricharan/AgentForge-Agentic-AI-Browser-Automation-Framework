@@ -5,8 +5,8 @@ Tests for form actions.
 import asyncio
 
 from app.actions.element.check import CheckAction
-from app.actions.element.uncheck import UncheckAction
 from app.actions.element.select_option import SelectOptionAction
+from app.actions.element.uncheck import UncheckAction
 
 
 class DummyLocator:

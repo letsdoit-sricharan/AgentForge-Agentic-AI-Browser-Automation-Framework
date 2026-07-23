@@ -5,7 +5,8 @@ Tracks timing, success/failure counts, and general execution statistics.
 
 import time
 from functools import wraps
-from typing import Callable, Any
+from typing import Callable
+
 from app.core.logger import contextual_logger
 
 
@@ -55,7 +56,7 @@ def track_time(metric_name: str, tags: dict = None):
             finally:
                 duration = time.perf_counter() - start
                 metrics.timer(metric_name, duration, tags)
-                
+
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             start = time.perf_counter()

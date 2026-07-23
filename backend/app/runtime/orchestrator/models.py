@@ -18,7 +18,7 @@ from uuid import uuid4
 class OrchestratedRequest:
     """
     Request for orchestrated execution.
-    
+
     This is the high-level request that enters the orchestrator.
     It knows about plugin names and workflow names, but not implementations.
     """
@@ -36,7 +36,7 @@ class OrchestratedRequest:
 class OrchestratedResult:
     """
     Result from orchestrated execution.
-    
+
     Standardized result structure returned by the orchestrator.
     """
 
@@ -56,7 +56,7 @@ class OrchestratedResult:
 class PluginResolution:
     """
     Result of plugin resolution.
-    
+
     Contains the resolved plugin and validation information.
     """
 
@@ -71,7 +71,7 @@ class PluginResolution:
 class WorkflowResolution:
     """
     Result of workflow resolution.
-    
+
     Contains the resolved workflow and execution configuration.
     """
 

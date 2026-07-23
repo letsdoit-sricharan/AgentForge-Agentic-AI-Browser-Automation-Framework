@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
+
 from app.runtime.execution.execution_request import ExecutionRequest
+
 
 @dataclass
 class Intent:

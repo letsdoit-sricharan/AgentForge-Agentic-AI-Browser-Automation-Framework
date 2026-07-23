@@ -1,4 +1,0 @@
-URL: https://ad.doubleclick.net/ccm/s/collect?auid=2136637979.1784708374&gtm=45He67k1v76179510za200zd76179510xea
-Method: POST
-Content-Type: 
-==================================================

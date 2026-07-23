@@ -115,3 +115,38 @@ venv.bak/
 .project
 .pydevproject
 .settings/
+
+# ==========================================
+# AgentForge - Generated / Debug Artifacts
+# ==========================================
+
+# Debug screenshots
+backend/debug_*.png
+backend/bms_*.png
+
+# Temporary debug scripts
+backend/debug_*.py
+backend/test_bms.py
+backend/test_locator.py
+backend/validate_booking.py
+
+# Runtime diagnostics
+backend/diagnostics/
+
+# Browser artifacts
+backend/screenshots/
+backend/traces/
+backend/videos/
+
+# Playwright reports
+playwright-report/
+test-results/
+
+# Runtime generated files
+*.trace
+*.har
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

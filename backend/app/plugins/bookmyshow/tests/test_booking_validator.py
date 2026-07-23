@@ -12,7 +12,6 @@ from app.plugins.bookmyshow.validators.booking_validator import (
     BookingValidator,
 )
 
-
 validator = BookingValidator()
 
 

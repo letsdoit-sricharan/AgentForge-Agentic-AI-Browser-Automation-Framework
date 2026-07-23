@@ -6,9 +6,9 @@ from app.actions.exceptions import (
     ActionError,
     ActionExecutionError,
     ActionTimeoutError,
-    InvalidActionError,
     ElementNotFoundError,
     ElementNotInteractableError,
+    InvalidActionError,
 )
 
 

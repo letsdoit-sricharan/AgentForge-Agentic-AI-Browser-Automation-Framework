@@ -4,13 +4,12 @@ Task implementation for booking a movie ticket on BookMyShow.
 
 from __future__ import annotations
 
-from typing import Any
+from dataclasses import dataclass
 from datetime import date
+from typing import Any
 
 from app.runtime.tasks.task import Task
 
-
-from dataclasses import dataclass
 
 @dataclass
 class BookTicketTask(Task):
@@ -38,12 +37,12 @@ class BookTicketTask(Task):
             errors.append("Movie name is required.")
         if not self.show_date:
             errors.append("Show date is required.")
-        
+
         return len(errors) == 0, errors
 
     def to_dict(self) -> dict[str, Any]:
         from app.plugins.bookmyshow.models.booking_request import BookingRequest
-        
+
         request = BookingRequest(
             city=self.city,
             movie=self.movie,

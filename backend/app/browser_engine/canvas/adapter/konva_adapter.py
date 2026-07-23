@@ -1,8 +1,9 @@
 from typing import Any, Dict, List, Optional
+
 from app.browser_engine.canvas.adapter.canvas_adapter import CanvasAdapter
+from app.browser_engine.canvas.adapter.exceptions import NodeMappingError
 from app.browser_engine.canvas.adapter.mapper import VirtualNodeMapper
 from app.browser_engine.interfaces.virtual_node import VirtualNode
-from app.browser_engine.canvas.adapter.exceptions import NodeMappingError
 from app.browser_engine.javascript.bridge import JavaScriptBridge
 
 
@@ -39,15 +40,15 @@ class KonvaAdapter(CanvasAdapter):
             if (typeof window.Konva === 'undefined' || !window.Konva.stages) {
                 return [];
             }
-            
+
             const nodes = [];
-            
+
             function traverse(node) {
                 if (!node) return;
-                
+
                 const absPos = node.getAbsolutePosition();
                 const size = node.size ? node.size() : {width: 0, height: 0};
-                
+
                 nodes.push({
                     id: node.id() || "",
                     name: node.name() || "",
@@ -59,17 +60,17 @@ class KonvaAdapter(CanvasAdapter):
                     visible: node.isVisible(),
                     attrs: node.attrs || {}
                 });
-                
+
                 if (node.children) {
                     node.children.forEach(traverse);
                 }
             }
-            
+
             window.Konva.stages.forEach(traverse);
             return nodes;
         }
         """
-        
+
         result = await self._js_bridge.evaluate(script)
         if not isinstance(result, list):
             return []

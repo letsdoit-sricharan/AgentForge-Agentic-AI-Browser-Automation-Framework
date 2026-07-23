@@ -1,5 +1,0 @@
-URL: https://api2.branch.io/v1/pageview
-Method: POST
-Content-Type: application/json; charset=utf-8
-==================================================
-{"branch_view_enabled":true}

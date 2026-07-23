@@ -1,344 +1,140 @@
-# PROJECT_STATE.md
+# AgentForge — Project State
 
-> Last Updated: July 2, 2026
->
-> Project: **AgentForge**
->
-> Status: **Backend Foundation Completed**
->
-> Current Milestone: **Milestone 4 – Browser Engine MVP**
+> **Version**: 1.0.0  
+> **Status**: Release Candidate — Backend Complete  
+> **Last Updated**: 2026-07-23
 
 ---
 
-# Project Vision
+## What Is AgentForge?
 
-AgentForge is a reusable Agentic AI platform for browser automation.
-
-The long-term goal is to create a framework where different automation plugins (BookMyShow, Amazon, IRCTC, LinkedIn, etc.) can reuse the same Browser Engine and Agent Runtime.
-
-The BookMyShow ticket booking agent is the first plugin built on top of this platform.
-
----
-
-# Current Progress
-
-## Milestone 1 – Configuration System
-
-**Status:** ✅ Completed
-
-### Implemented
-
-* `app/core/config.py`
-* `.env`
-* `.env.example`
-
-### Features
-
-* Centralized application configuration
-* Pydantic Settings
-* Environment variable validation
-* Singleton Settings instance
-* Automatic `.env` loading
+AgentForge is a plugin-driven, agentic AI platform for browser automation.
+It provides a clean architectural foundation for building autonomous agents
+that can navigate websites, fill forms, extract data, and execute complex
+multi-step workflows — all through a reusable, testable framework.
 
 ---
 
-## Milestone 2 – Logging System
+## Architecture Summary
 
-**Status:** ✅ Completed
-
-### Implemented
-
-* `app/core/logger.py`
-
-### Features
-
-* Console logging
-* File logging
-* Log rotation
-* Log retention
-* Configurable log levels
-* Shared logger for the entire application
-
----
-
-## Milestone 3 – Backend Bootstrap
-
-**Status:** ✅ Completed
-
-### Implemented
-
-* `app/main.py`
-
-### Features
-
-* FastAPI initialization
-* Lifespan events
-* Startup logging
-* Shutdown logging
-* Root endpoint
-* Health endpoint
-* Swagger UI
-
-### Verified
-
-Backend starts successfully.
-
-Available endpoints:
-
-* `GET /`
-* `GET /health`
-* `/docs`
-
----
-
-# Current Architecture
-
-```text
-Frontend
-    │
-    ▼
-FastAPI Backend
-    │
-    ├── Configuration
-    ├── Logging
-    ├── Future API Routes
-    └── Browser Engine (Upcoming)
+```
+┌─────────────────────────────────────────────────┐
+│  API Layer (FastAPI)                            │
+│  POST /api/bookings/   GET /api/bookings/{id}   │
+└────────────────────┬────────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────────┐
+│  Plugin Framework                               │
+│  BookMyShow Plugin (reference implementation)   │
+│  ┌─────────┐  ┌────────────┐  ┌─────────────┐  │
+│  │ Steps   │  │ Workflows  │  │ Page Objects│  │
+│  └─────────┘  └────────────┘  └─────────────┘  │
+└────────────────────┬────────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────────┐
+│  Browser Engine                                 │
+│  PlaywrightBrowser + PlaywrightPage             │
+│  JavaScriptBridge + CanvasAdapter               │
+└────────────────────┬────────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────────┐
+│  Runtime + Agent Loop                           │
+│  ExecutionOrchestrator + DefaultAgent           │
+│  Planner (architecture only — no LLM yet)       │
+└─────────────────────────────────────────────────┘
 ```
 
 ---
 
-# Documentation Completed
+## Completed Phases
 
-The following architecture documents have been completed.
-
-* PROJECT_GUIDE.md
-* SYSTEM_DESIGN.md
-* AGENT_RUNTIME.md
-* PLATFORM_ARCHITECTURE.md
-* BROWSER_ENGINE.md
-* PLUGIN_SDK.md
-
-These documents should always stay synchronized with the implementation.
+| Phase | Description | Status |
+|---|---|---|
+| 1 | Browser Engine + Action Library | ✅ Complete |
+| 2 | Runtime + Execution Orchestrator | ✅ Complete |
+| 3 | Plugin Framework + Registry | ✅ Complete |
+| 4 | Task System + State Machine | ✅ Complete |
+| 5 | JavaScript Bridge | ✅ Complete |
+| 6 | Canvas Automation Framework + Canvas Adapter | ✅ Complete |
+| 7 | AI Planner Architecture | ✅ Complete |
+| 8 | Agent Runtime Loop | ✅ Complete |
+| 9 | BookMyShow Reference Plugin (E2E Validation) | ✅ Complete |
+| 10 | Production Hardening (Observability, CLI, SDK) | ✅ Complete |
+| 10.5 | Framework Audit + Code Cleanup | ✅ Complete |
+| 10.6 | API Freeze + Release Preparation | ✅ Complete |
+| 10.7 | Mock E2E Validation (Demo App) | ✅ Complete |
 
 ---
 
-# Current Backend Structure
+## Test Coverage
 
-```text
-backend/
+| Suite | Tests | Status |
+|---|---|---|
+| `tests/` (top-level) | 17 | ✅ All pass |
+| `app/` (in-package) | 272 | ✅ 272 pass, 2 skip |
+| **Total** | **289** | **✅ 289 passed** |
 
-app/
-│
-├── core/
-│   ├── config.py
-│   └── logger.py
-│
-└── main.py
+---
 
-tests/
+## What's Next
 
-.env
-.env.example
-requirements.txt
-Dockerfile
+### Frontend Development (Phase 11)
+- React/Next.js frontend with real-time booking status UI
+- Live execution progress feed via WebSocket or Server-Sent Events
+- Booking history dashboard
+
+### LLM Integration (Phase 12)
+- Wire the existing Planner interfaces to an LLM backend (OpenAI/Gemini)
+- Natural language → ExecutionRequest translation
+- Tool-calling pattern for dynamic action selection
+
+### Additional Plugins
+- Swiggy food ordering plugin
+- Amazon product search plugin
+- Generic form-filling plugin
+
+### Infrastructure
+- Redis-backed job store (replaces in-memory `_EXECUTION_STATE` dict)
+- PostgreSQL persistence for agent sessions and booking history
+- Docker Compose production stack
+
+---
+
+## Known Limitations
+
+| Area | Limitation |
+|---|---|
+| Job Store | In-memory dict — lost on server restart |
+| LLM | Planner interfaces exist but no LLM is wired |
+| Canvas | JS-based Konva introspection; no abstract canvas adapter yet |
+| Auth | JWT framework exists but no user/session management |
+| Real BMS | Plugin targets the mock HTML, not the live website |
+
+---
+
+## Repository Layout
+
 ```
-
----
-
-# Coding Standards
-
-Every new module must follow this workflow.
-
-1. Define the purpose.
-2. Define responsibilities.
-3. Define what the module must NOT do.
-4. Design the architecture.
-5. Implement.
-6. Test.
-7. Review.
-8. Commit.
-
----
-
-# Engineering Principles
-
-The project follows:
-
-* Single Responsibility Principle
-* Clean Architecture
-* Modular Design
-* Interface-first Development
-* Extensibility
-* Separation of Concerns
-* Production-quality coding practices
-
-No business logic should be placed inside infrastructure modules.
-
----
-
-# Current Milestone
-
-## Milestone 4 – Browser Engine MVP
-
-**Status:** 🟡 In Progress
-
-Goal:
-
-Create a reusable browser automation layer that hides Playwright from the rest of the application.
-
-The Browser Engine should become the only component responsible for browser interactions.
-
----
-
-## Planned Browser Engine Structure
-
-```text
-app/
-
-browser_engine/
-
-interfaces/
-│
-├── browser.py
-├── page.py
-├── context.py
-├── session.py
-└── actions.py
-
-manager/
-│
-└── browser_manager.py
-
-session/
-│
-└── session_manager.py
-
-context/
-│
-└── context_manager.py
-
-page/
-│
-└── page_manager.py
-
-actions/
-│
-├── click.py
-├── fill.py
-├── wait.py
-├── scroll.py
-└── screenshot.py
+e:/projrcts/AI_project/
+├── backend/                     # Python FastAPI backend
+│   ├── app/
+│   │   ├── actions/             # Browser action library
+│   │   ├── agent/               # Agent runtime loop
+│   │   ├── api/                 # FastAPI endpoints + models
+│   │   ├── browser_engine/      # Browser abstraction + Playwright impl
+│   │   ├── cli.py               # CLI tool (agentforge)
+│   │   ├── core/                # Config + logging
+│   │   ├── planner/             # AI planning interfaces
+│   │   ├── plugin_framework/    # Plugin base classes
+│   │   ├── plugins/             # Plugins (bookmyshow, ...)
+│   │   ├── runtime/             # Orchestration + state machine
+│   │   ├── static/              # Mock demo HTML
+│   │   └── main.py              # FastAPI app
+│   ├── tests/                   # Top-level integration tests
+│   ├── pyproject.toml
+│   └── Dockerfile
+├── frontend/                    # Frontend (Phase 11)
+├── docker/                      # Docker configuration
+├── docs/                        # Extended documentation
+└── README.md
 ```
-
----
-
-# Immediate Goal
-
-Implement the Browser Engine so that it can:
-
-1. Launch Chromium.
-2. Open Google.
-3. Search for "BookMyShow".
-4. Capture a screenshot.
-5. Close the browser.
-
-No business logic or AI reasoning will be implemented at this stage.
-
----
-
-# Upcoming Milestones
-
-## Milestone 5
-
-Browser Actions
-
-* Click
-* Fill
-* Wait
-* Scroll
-* Screenshot
-
----
-
-## Milestone 6
-
-Plugin SDK
-
-* Plugin Loader
-* Plugin Registry
-* Plugin Lifecycle
-
----
-
-## Milestone 7
-
-BookMyShow Plugin
-
-* Search Movies
-* Theatre Selection
-* Show Time Selection
-* Seat Selection
-
----
-
-## Milestone 8
-
-Agent Runtime
-
-* LangGraph Workflow
-* Planning
-* Decision Making
-* Retry Logic
-
----
-
-## Milestone 9
-
-Frontend Integration
-
-* User Dashboard
-* Live Browser Status
-* Booking Progress
-* Ticket Download
-
----
-
-## Milestone 10
-
-Production Deployment
-
-* Docker
-* CI/CD
-* Cloud Deployment
-* Monitoring
-* Logging
-* Error Reporting
-
----
-
-# Current Status
-
-| Component              | Status         |
-| ---------------------- | -------------- |
-| Architecture Documents | ✅              |
-| Backend Bootstrap      | ✅              |
-| Configuration          | ✅              |
-| Logging                | ✅              |
-| FastAPI                | ✅              |
-| Swagger                | ✅              |
-| Browser Engine         | 🟡 In Progress |
-| Plugin SDK             | ⏳ Pending      |
-| Agent Runtime          | ⏳ Pending      |
-| BookMyShow Plugin      | ⏳ Pending      |
-| Frontend               | ⏳ Pending      |
-| Deployment             | ⏳ Pending      |
-
----
-
-# Notes
-
-* Playwright should never be exposed outside the Browser Engine.
-* Every future automation plugin must use the Browser Engine APIs.
-* Maintain a modular architecture to support additional automation plugins in the future.
-* Update this document after completing every milestone.
-* Every milestone should be independently testable before proceeding to the next one.

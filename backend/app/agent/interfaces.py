@@ -5,6 +5,7 @@ from app.agent.models import AgentSession, EvaluationResult, Observation
 from app.planner.models import PlanningResult
 from app.runtime.execution.execution_request import ExecutionRequest
 
+
 class Executor(ABC):
     @abstractmethod
     async def execute(self, request: ExecutionRequest) -> Any:

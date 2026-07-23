@@ -1,8 +1,8 @@
 from typing import List
 
+from app.browser_engine.canvas.adapter.canvas_adapter import CanvasAdapter
 from app.browser_engine.interfaces.canvas_engine import CanvasEngine
 from app.browser_engine.interfaces.virtual_node import VirtualNode
-from app.browser_engine.canvas.adapter.canvas_adapter import CanvasAdapter
 
 
 class KonvaEngine(CanvasEngine):

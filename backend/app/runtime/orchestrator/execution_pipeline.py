@@ -47,7 +47,7 @@ class PipelineStage(Enum):
 class PipelineContext:
     """
     Context passed through pipeline stages.
-    
+
     Accumulates data as it flows through the pipeline.
     """
 
@@ -71,7 +71,7 @@ class PipelineContext:
 class ExecutionPipeline:
     """
     Orchestrates execution through defined stages.
-    
+
     Implements a flexible pipeline pattern that can be extended
     with middleware, hooks, and custom stages.
     """
@@ -196,7 +196,7 @@ class ExecutionPipeline:
     def clear_stages(self) -> None:
         """
         Clear all registered stages.
-        
+
         Useful for testing or reconfiguration.
         """
         self._stages.clear()
@@ -205,7 +205,7 @@ class ExecutionPipeline:
     def clear_middleware(self) -> None:
         """
         Clear all registered middleware.
-        
+
         Useful for testing or reconfiguration.
         """
         self._middleware.clear()

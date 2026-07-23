@@ -6,9 +6,6 @@ Coordinates the execution of workflow tasks.
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
-from typing import Any
-
 from app.runtime.execution.execution_context import ExecutionContext
 from app.runtime.execution.execution_result import ExecutionResult
 from app.runtime.executors.task_executor import (

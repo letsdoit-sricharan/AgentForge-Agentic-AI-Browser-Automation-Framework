@@ -1,5 +1,6 @@
 from app.browser_engine.exceptions.browser_errors import BrowserEngineError
 
+
 class JavaScriptError(BrowserEngineError):
     """Base exception for JavaScript execution failures."""
     pass

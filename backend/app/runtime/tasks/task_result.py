@@ -38,7 +38,7 @@ class TaskStatus(Enum):
 class TaskResult:
     """
     Result of task execution.
-    
+
     Provides a standardized way to return task outcomes regardless
     of which plugin or workflow executed the task.
     """
@@ -46,37 +46,37 @@ class TaskResult:
     task_id: str
     task_type: str
     status: TaskStatus
-    
+
     # Execution timing
     started_at: datetime | None = None
     completed_at: datetime | None = None
-    
+
     # Output data
     output: dict[str, Any] = field(default_factory=dict)
-    
+
     # Error information
     errors: list[str] = field(default_factory=list)
     error_details: dict[str, Any] = field(default_factory=dict)
-    
+
     # Execution metadata
     plugin_name: str | None = None
     workflow_name: str | None = None
-    
+
     # Additional metadata
     metadata: dict[str, Any] = field(default_factory=dict)
-    
+
     @property
     def success(self) -> bool:
         """Check if task completed successfully."""
         return self.status == TaskStatus.COMPLETED
-    
+
     @property
     def duration(self) -> float | None:
         """Get execution duration in seconds."""
         if self.started_at and self.completed_at:
             return (self.completed_at - self.started_at).total_seconds()
         return None
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {

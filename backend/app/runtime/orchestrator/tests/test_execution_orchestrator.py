@@ -4,9 +4,9 @@ Tests for ExecutionOrchestrator.
 
 import pytest
 
-from app.plugins import PluginManager, PluginRegistry
-from app.plugins.interfaces import Plugin, PluginContext, PluginMetadata
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
+from app.plugins import PluginRegistry
+from app.plugins.interfaces import Plugin, PluginContext, PluginMetadata
 from app.runtime.orchestrator.execution_orchestrator import ExecutionOrchestrator
 from app.runtime.orchestrator.models import OrchestratedRequest
 
@@ -57,13 +57,13 @@ class TestExecutionOrchestrator:
         registry = PluginRegistry()
         plugin = DummyPlugin("test_plugin")
         registry.register(plugin)
-        
+
         # Mock plugin manager
         manager = type("PluginManager", (), {
             "registry": registry,
             "get_plugin": lambda self, name: registry.get(name),
         })()
-        
+
         return manager
 
     @pytest.fixture

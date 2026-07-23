@@ -26,41 +26,41 @@ from typing import Any
 class TaskContext:
     """
     Context for task execution.
-    
+
     Separates business-level execution context (task) from
     technical execution context (workflow/browser).
-    
+
     TaskContext → Converted to → WorkflowContext (by TaskExecutor)
     """
 
     # Task identification
     task_id: str
     task_type: str
-    
+
     # Task input data
     input_data: dict[str, Any] = field(default_factory=dict)
-    
+
     # Execution metadata
     created_at: datetime = field(default_factory=datetime.utcnow)
     priority: int = 0
-    
+
     # Correlation for tracking related tasks
     correlation_id: str | None = None
     parent_task_id: str | None = None
-    
+
     # Configuration
     configuration: dict[str, Any] = field(default_factory=dict)
-    
+
     # Timeout in seconds
     timeout: float | None = None
-    
+
     # Retry configuration
     max_retries: int = 0
     retry_count: int = 0
-    
+
     # Additional metadata
     metadata: dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {

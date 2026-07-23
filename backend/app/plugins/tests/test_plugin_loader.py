@@ -4,7 +4,7 @@ Tests for PluginLoader.
 
 import pytest
 
-from app.plugins.exceptions import PluginLoadError, PluginValidationError
+from app.plugins.exceptions import PluginLoadError
 from app.plugins.manager import PluginLoader
 
 

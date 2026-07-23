@@ -1,15 +1,24 @@
-import pytest
-from unittest.mock import AsyncMock, patch
 
-from app.agent.loop import DefaultAgent
-from app.agent.models import AgentSession, Observation, EvaluationAction, EvaluationResult
-from app.planner.interfaces import Planner
-from app.planner.models import PlanningResult, Plan, Goal
-from app.runtime.execution.execution_request import ExecutionRequest
+import pytest
+
 from app.agent.interfaces import (
-    Executor, GoalMonitor, ObservationCollector, 
-    Replanner, StateEvaluator, TerminationStrategy
+    Executor,
+    GoalMonitor,
+    ObservationCollector,
+    Replanner,
+    StateEvaluator,
+    TerminationStrategy,
 )
+from app.agent.loop import DefaultAgent
+from app.agent.models import (
+    AgentSession,
+    EvaluationAction,
+    EvaluationResult,
+    Observation,
+)
+from app.planner.interfaces import Planner
+from app.planner.models import Goal, Plan, PlanningResult
+from app.runtime.execution.execution_request import ExecutionRequest
 
 # Mocks specific for E2E validation
 
@@ -37,7 +46,7 @@ class E2EObservationCollector(ObservationCollector):
 class E2EGoalMonitor(GoalMonitor):
     def __init__(self):
         self.call_count = 0
-        
+
     async def is_goal_achieved(self, session: AgentSession, observation: Observation) -> bool:
         self.call_count += 1
         # The goal is achieved after 1 execution cycle completes
@@ -76,13 +85,13 @@ async def test_e2e_booking_workflow(e2e_agent):
     Test that the agent can successfully plan and execute the BookMyShow workflow.
     """
     prompt = "Book 2 tickets for Inception on the 10th"
-    
+
     session = await e2e_agent.run(prompt)
-    
+
     assert session.status == "COMPLETED"
     assert len(session.observation_history) == 1
     assert session.observation_history[0].is_success is True
-    
+
     executor = e2e_agent.executor
     assert len(executor.executed) == 1
     assert executor.executed[0].plugin == "bookmyshow"

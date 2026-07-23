@@ -25,7 +25,6 @@ from typing import TYPE_CHECKING
 
 from app.runtime.orchestrator.models import OrchestratedRequest
 from app.runtime.tasks.exceptions import (
-    TaskExecutionError,
     TaskNotSupportedError,
     TaskResolutionError,
 )
@@ -46,9 +45,9 @@ logger = logging.getLogger(__name__)
 class TaskExecutor:
     """
     Executes tasks by delegating to the appropriate plugin via the orchestrator.
-    
+
     This is the bridge between the task abstraction layer and the execution layer.
-    
+
     Flow:
         Task → TaskExecutor → Orchestrator → Plugin → Workflow → Result
     """
@@ -60,7 +59,7 @@ class TaskExecutor:
     ) -> None:
         """
         Initialize the task executor.
-        
+
         Args:
             orchestrator: Execution orchestrator for plugin execution
             task_registry: Task registry for plugin resolution
@@ -79,32 +78,32 @@ class TaskExecutor:
     ) -> TaskResult:
         """
         Execute a task.
-        
+
         Args:
             task: Task to execute
             session: Browser session
             page: Browser page
             plugin_context: Plugin context
             task_context: Optional task context (created if not provided)
-            
+
         Returns:
             TaskResult with execution outcome
-            
+
         Raises:
             TaskNotSupportedError: If no plugin supports the task
             TaskResolutionError: If plugin/workflow resolution fails
             TaskExecutionError: If execution fails
         """
         started_at = datetime.utcnow()
-        
+
         # Create task context if not provided
         if task_context is None:
             task_context = self._create_task_context(task)
-        
+
         self._logger.info(
             f"Executing task: {task.task_type} (ID: {task.task_id})"
         )
-        
+
         try:
             # Validate task
             is_valid, errors = task.validate()
@@ -115,19 +114,19 @@ class TaskExecutor:
                     errors,
                     started_at,
                 )
-            
+
             # Resolve which plugin can execute this task
             plugin_name, workflow_name = self._resolve_plugin_and_workflow(
                 task.task_type
             )
-            
+
             # Convert Task → OrchestratedRequest
             orchestrated_request = self._task_to_orchestrated_request(
                 task,
                 plugin_name,
                 workflow_name,
             )
-            
+
             # Execute via orchestrator
             orchestrated_result = await self._orchestrator.execute(
                 request=orchestrated_request,
@@ -135,7 +134,7 @@ class TaskExecutor:
                 page=page,
                 plugin_context=plugin_context,
             )
-            
+
             # Convert OrchestratedResult → TaskResult
             task_result = self._orchestrated_result_to_task_result(
                 task,
@@ -144,13 +143,13 @@ class TaskExecutor:
                 workflow_name,
                 started_at,
             )
-            
+
             self._logger.info(
                 f"Task {task.task_id} completed with status: {task_result.status.name}"
             )
-            
+
             return task_result
-            
+
         except TaskNotSupportedError as e:
             self._logger.error(f"Task not supported: {e}")
             return self._create_error_result(
@@ -159,7 +158,7 @@ class TaskExecutor:
                 [str(e)],
                 started_at,
             )
-        
+
         except TaskResolutionError as e:
             self._logger.error(f"Task resolution failed: {e}")
             return self._create_error_result(
@@ -168,7 +167,7 @@ class TaskExecutor:
                 [str(e)],
                 started_at,
             )
-        
+
         except Exception as e:
             self._logger.error(
                 f"Task execution failed: {e}",
@@ -187,10 +186,10 @@ class TaskExecutor:
     ) -> TaskContext:
         """
         Create TaskContext from Task.
-        
+
         Args:
             task: Task instance
-            
+
         Returns:
             TaskContext
         """
@@ -209,13 +208,13 @@ class TaskExecutor:
     ) -> tuple[str, str]:
         """
         Resolve which plugin and workflow can execute a task type.
-        
+
         Args:
             task_type: Task type identifier
-            
+
         Returns:
             Tuple of (plugin_name, workflow_name)
-            
+
         Raises:
             TaskNotSupportedError: If no plugin supports the task
             TaskResolutionError: If resolution fails
@@ -225,26 +224,26 @@ class TaskExecutor:
             supporting_plugins = self._registry.get_supporting_plugins(task_type)
         except TaskNotSupportedError:
             raise
-        
+
         if not supporting_plugins:
             raise TaskNotSupportedError(
                 task_type,
                 "No plugins registered for this task type",
             )
-        
+
         # Use the first supporting plugin
         # In future, add plugin selection strategy (priority, load balancing, etc.)
         plugin_name = supporting_plugins[0]
-        
+
         # Derive workflow name from task type
         # Convention: task_type "search_movie" → workflow "search_movie_workflow"
         workflow_name = f"{task_type}_workflow"
-        
+
         self._logger.debug(
             f"Resolved task '{task_type}' to plugin '{plugin_name}', "
             f"workflow '{workflow_name}'"
         )
-        
+
         return plugin_name, workflow_name
 
     def _task_to_orchestrated_request(
@@ -255,12 +254,12 @@ class TaskExecutor:
     ) -> OrchestratedRequest:
         """
         Convert Task to OrchestratedRequest.
-        
+
         Args:
             task: Task instance
             plugin_name: Target plugin name
             workflow_name: Target workflow name
-            
+
         Returns:
             OrchestratedRequest
         """
@@ -288,19 +287,19 @@ class TaskExecutor:
     ) -> TaskResult:
         """
         Convert OrchestratedResult to TaskResult.
-        
+
         Args:
             task: Original task
             orchestrated_result: Result from orchestrator
             plugin_name: Plugin that executed the task
             workflow_name: Workflow that executed the task
             started_at: Execution start time
-            
+
         Returns:
             TaskResult
         """
         status = TaskStatus.COMPLETED if orchestrated_result.success else TaskStatus.FAILED
-        
+
         return TaskResult(
             task_id=task.task_id,
             task_type=task.task_type,
@@ -326,13 +325,13 @@ class TaskExecutor:
     ) -> TaskResult:
         """
         Create an error TaskResult.
-        
+
         Args:
             task: Task that failed
             status: Task status
             errors: Error messages
             started_at: Execution start time
-            
+
         Returns:
             TaskResult with error information
         """
@@ -351,10 +350,10 @@ class TaskExecutor:
     ) -> bool:
         """
         Check if a task type can be executed.
-        
+
         Args:
             task_type: Task type identifier
-            
+
         Returns:
             True if at least one plugin supports the task
         """
@@ -363,7 +362,7 @@ class TaskExecutor:
     def get_supported_task_types(self) -> list[str]:
         """
         Get all supported task types.
-        
+
         Returns:
             List of task type identifiers
         """

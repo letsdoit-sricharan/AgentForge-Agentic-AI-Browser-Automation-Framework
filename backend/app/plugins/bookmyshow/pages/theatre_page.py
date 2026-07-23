@@ -58,7 +58,7 @@ class TheatrePage(BasePage):
             .locator(f'text="{time}"')
             .first()
         )
-        
+
         await time_locator.wait()
         await ClickAction(locator=time_locator).execute(self.page)
 
@@ -68,7 +68,7 @@ class TheatrePage(BasePage):
         """
         if not self.ACCEPT_TERMS_BUTTON:
             return
-            
+
         try:
             terms_locator = self.page.locator(self.ACCEPT_TERMS_BUTTON)
             await terms_locator.wait(timeout=5000)

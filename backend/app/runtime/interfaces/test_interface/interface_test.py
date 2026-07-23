@@ -7,7 +7,6 @@ from app.runtime.interfaces.execution_engine import ExecutionEngine
 from app.runtime.interfaces.executor import Executor
 from app.runtime.interfaces.strategy import Strategy
 
-
 # ---------------------------------------------------------------------
 # Dummy Implementations
 # ---------------------------------------------------------------------

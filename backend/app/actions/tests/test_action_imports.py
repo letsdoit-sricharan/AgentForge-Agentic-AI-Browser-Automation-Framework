@@ -4,21 +4,21 @@ Tests the public Action Library API.
 
 from app.actions import (
     BackAction,
-    ForwardAction,
-    NavigateAction,
-    RefreshAction,
-    WaitAction,
+    BlurAction,
+    CheckAction,
+    ClearAction,
     ClickAction,
     DoubleClickAction,
-    RightClickAction,
-    HoverAction,
     FillAction,
-    ClearAction,
-    CheckAction,
-    UncheckAction,
-    SelectOptionAction,
     FocusAction,
-    BlurAction,
+    ForwardAction,
+    HoverAction,
+    NavigateAction,
+    RefreshAction,
+    RightClickAction,
+    SelectOptionAction,
+    UncheckAction,
+    WaitAction,
 )
 
 

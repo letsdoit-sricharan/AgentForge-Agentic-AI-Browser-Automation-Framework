@@ -2,8 +2,8 @@
 Tests for WorkflowEvent.
 """
 
-from app.runtime.events.workflow_event import WorkflowEvent
 from app.runtime.events.event_types import WorkflowEventType
+from app.runtime.events.workflow_event import WorkflowEvent
 
 
 def test_workflow_event():

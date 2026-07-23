@@ -6,7 +6,6 @@ import pytest
 
 from app.runtime.tasks.exceptions import (
     TaskNotSupportedError,
-    TaskRegistrationError,
 )
 from app.runtime.tasks.task_metadata import TaskMetadata
 from app.runtime.tasks.task_registry import TaskRegistry

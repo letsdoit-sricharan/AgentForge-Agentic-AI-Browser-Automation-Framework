@@ -19,9 +19,9 @@ from __future__ import annotations
 from abc import ABC
 from typing import final
 
-from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.browser_engine.interfaces.page import Page
 from app.browser_engine.interfaces.session import Session
+from app.plugin_framework.workflow.workflow_context import WorkflowContext
 
 
 class BasePage(ABC):

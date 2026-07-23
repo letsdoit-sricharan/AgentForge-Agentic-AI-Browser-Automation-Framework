@@ -1,8 +1,8 @@
 import asyncio
 from typing import Any, Type, TypeVar, Union
 
-from playwright.async_api import Page as PlaywrightCorePage
 from playwright.async_api import Error as PlaywrightError
+from playwright.async_api import Page as PlaywrightCorePage
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from pydantic import TypeAdapter, ValidationError
 
@@ -26,7 +26,7 @@ class PlaywrightJavaScriptBridge(JavaScriptBridge):
         return_type: Type[T] = type(None),
         timeout: float = 30000.0
     ) -> Union[T, Any]:
-        
+
         # We need a wrapper script if we want to enforce timeout natively in JS
         # But Playwright's evaluate doesn't take a timeout. We will use asyncio.wait_for
         try:
@@ -55,8 +55,8 @@ class PlaywrightJavaScriptBridge(JavaScriptBridge):
             raise JavaScriptSerializationError(f"Unexpected serialization error: {str(e)}") from e
 
     async def add_script_tag(
-        self, 
-        url: str | None = None, 
+        self,
+        url: str | None = None,
         content: str | None = None
     ) -> None:
         try:

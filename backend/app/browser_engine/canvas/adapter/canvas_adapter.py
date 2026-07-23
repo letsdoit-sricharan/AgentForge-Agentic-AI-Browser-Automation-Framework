@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
-from app.browser_engine.javascript.bridge import JavaScriptBridge
+from app.browser_engine.canvas.adapter.exceptions import CanvasAdapterError
 from app.browser_engine.canvas.adapter.mapper import VirtualNodeMapper
 from app.browser_engine.canvas.adapter.query import VirtualNodeQuery
-from app.browser_engine.canvas.adapter.exceptions import CanvasAdapterError
+from app.browser_engine.javascript.bridge import JavaScriptBridge
 
 
 class CanvasAdapter(ABC):
@@ -27,7 +27,7 @@ class CanvasAdapter(ABC):
         Args:
             filter_hint: An optional string to allow the JS side to pre-filter
                          nodes for performance optimization on large graphs.
-        
+
         Returns:
             A list of raw JSON dictionaries from the browser.
         """

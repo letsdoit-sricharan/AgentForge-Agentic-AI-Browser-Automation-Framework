@@ -31,7 +31,7 @@ class Locator(ABC):
     async def click(self, force: bool = False) -> None:
         """
         Click the element.
-        
+
         Args:
             force: Whether to bypass actionability checks.
         """
@@ -135,7 +135,7 @@ class Locator(ABC):
     def filter(self, has_text: str | None = None) -> "Locator":
         """
         Return a locator narrowed by filter criteria.
-        
+
         Args:
             has_text: Optional text that the element must contain.
         """
@@ -145,7 +145,7 @@ class Locator(ABC):
     def locator(self, selector: str) -> "Locator":
         """
         Find an element matching the selector inside this locator.
-        
+
         Args:
             selector: CSS or text selector.
         """

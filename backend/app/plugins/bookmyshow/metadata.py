@@ -17,7 +17,6 @@ from __future__ import annotations
 
 from app.plugins.interfaces.plugin_metadata import PluginMetadata
 
-
 BOOKMYSHOW_METADATA = PluginMetadata(
     name="bookmyshow",
     version="1.0.0",

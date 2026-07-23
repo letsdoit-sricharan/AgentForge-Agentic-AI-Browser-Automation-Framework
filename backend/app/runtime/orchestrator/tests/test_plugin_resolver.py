@@ -4,9 +4,9 @@ Tests for PluginResolver.
 
 import pytest
 
+from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugins import PluginRegistry
 from app.plugins.interfaces import Plugin, PluginContext, PluginMetadata
-from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.runtime.orchestrator.exceptions import PluginResolutionError
 from app.runtime.orchestrator.plugin_resolver import PluginResolver
 

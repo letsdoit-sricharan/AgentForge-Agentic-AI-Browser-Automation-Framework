@@ -11,11 +11,11 @@ from typing import Any
 
 from app.runtime.execution.execution_context import ExecutionContext
 from app.runtime.execution.execution_result import ExecutionResult
-from app.runtime.state.execution_status import ExecutionStatus
 from app.runtime.executors.browser_executor import (
     BrowserExecutor,
     BrowserTask,
 )
+from app.runtime.state.execution_status import ExecutionStatus
 
 Task = Callable[
     [ExecutionContext],

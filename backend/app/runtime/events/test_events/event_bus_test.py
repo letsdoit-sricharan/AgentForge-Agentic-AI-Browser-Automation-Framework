@@ -4,8 +4,8 @@ Tests for EventBus.
 
 from app.runtime.events.event_bus import EventBus
 from app.runtime.events.event_handlers import EventHandler
-from app.runtime.events.runtime_event import RuntimeEvent
 from app.runtime.events.event_types import RuntimeEventType
+from app.runtime.events.runtime_event import RuntimeEvent
 
 
 class PrintHandler(EventHandler):

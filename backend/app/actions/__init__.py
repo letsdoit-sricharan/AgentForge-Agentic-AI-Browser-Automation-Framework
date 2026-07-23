@@ -6,14 +6,6 @@ used by plugins and the Agent Runtime.
 """
 
 # Navigation
-from .navigation import (
-    BackAction,
-    ForwardAction,
-    NavigateAction,
-    RefreshAction,
-    WaitAction,
-)
-
 # Element
 from .element import (
     BlurAction,
@@ -29,12 +21,10 @@ from .element import (
     UncheckAction,
 )
 
-# Locator
-from .locator import (
-    FindAction,
-    WaitForElementAction,
-    WaitUntilHiddenAction,
-    validate_selector,
+# File
+from .file import (
+    DownloadAction,
+    UploadAction,
 )
 
 # Keyboard
@@ -45,12 +35,27 @@ from .keyboard import (
     TypeTextAction,
 )
 
+# Locator
+from .locator import (
+    FindAction,
+    WaitForElementAction,
+    WaitUntilHiddenAction,
+    validate_selector,
+)
+
 # Mouse
 from .mouse import (
-    MoveMouseAction,
     DragAction,
     DragAndDropAction,
     MouseWheelAction,
+    MoveMouseAction,
+)
+from .navigation import (
+    BackAction,
+    ForwardAction,
+    NavigateAction,
+    RefreshAction,
+    WaitAction,
 )
 
 # Page
@@ -61,12 +66,6 @@ from .page import (
     ScrollAction,
     ScrollIntoViewAction,
     ScrollToAction,
-)
-
-# File
-from .file import (
-    UploadAction,
-    DownloadAction,
 )
 
 __all__ = [

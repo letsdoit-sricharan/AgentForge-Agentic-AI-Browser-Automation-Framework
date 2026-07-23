@@ -10,13 +10,13 @@ from __future__ import annotations
 
 import asyncio
 
+import pytest
+
 from app.browser_engine.managers.browser_manager import BrowserManager
-from app.plugins.bookmyshow.steps.open_homepage import OpenHomepageStep
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
+from app.plugins.bookmyshow.steps.open_homepage import OpenHomepageStep
 from app.plugins.interfaces.plugin_context import PluginContext
 
-
-import pytest
 
 @pytest.mark.skip(reason="Integration test requiring browser and network access")
 async def test_execute() -> None:

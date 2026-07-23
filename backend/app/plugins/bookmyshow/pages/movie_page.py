@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import asyncio
 
-from app.actions.element import ClickAction, FillAction
+from app.actions.element import ClickAction
 from app.plugin_framework.pages import BasePage
 
 

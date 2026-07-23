@@ -5,8 +5,9 @@ Every module in the application should import the logger
 defined here instead of creating its own logger.
 """
 
-from pathlib import Path
+import contextvars
 import sys
+from pathlib import Path
 
 from loguru import logger
 
@@ -71,8 +72,6 @@ logger.add(
 # --------------------------------------------------
 # Contextual Timelines
 # --------------------------------------------------
-import contextvars
-
 session_id_var: contextvars.ContextVar[str] = contextvars.ContextVar("session_id", default="unknown")
 step_name_var: contextvars.ContextVar[str] = contextvars.ContextVar("step_name", default="unknown")
 

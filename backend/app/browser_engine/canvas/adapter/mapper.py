@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict
 
 from app.browser_engine.interfaces.virtual_node import VirtualNode
-from app.browser_engine.canvas.adapter.exceptions import NodeMappingError
+
 
 class VirtualNodeMapper(ABC):
     """

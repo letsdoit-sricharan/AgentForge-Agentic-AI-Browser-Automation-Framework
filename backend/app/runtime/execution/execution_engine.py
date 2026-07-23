@@ -11,19 +11,19 @@ contains very little business logic.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from app.runtime.execution.execution_context import ExecutionContext
 from app.runtime.execution.execution_queue import ExecutionQueue
 from app.runtime.execution.execution_result import ExecutionResult
-
-from typing import TYPE_CHECKING
 from app.runtime.strategies.navigation_strategy import NavigationDecision
 
 if TYPE_CHECKING:
     from app.runtime.executors.workflow_executor import WorkflowExecutor
+    from app.runtime.strategies.navigation_strategy import NavigationStrategy
+    from app.runtime.strategies.recovery_strategy import RecoveryStrategy
     from app.runtime.strategies.retry_strategy import RetryStrategy
     from app.runtime.strategies.wait_strategy import WaitStrategy
-    from app.runtime.strategies.recovery_strategy import RecoveryStrategy
-    from app.runtime.strategies.navigation_strategy import NavigationStrategy
 
 
 class ExecutionEngine:

@@ -1,5 +1,5 @@
-from app.plugins.interfaces.plugin_metadata import PluginMetadata
 from app.plugins.interfaces.agent_plugin import AgentPlugin
+from app.plugins.interfaces.plugin_metadata import PluginMetadata
 
 metadata = PluginMetadata(
     name="test_plugin",
@@ -13,7 +13,7 @@ class TestPluginPlugin(AgentPlugin):
     """
     Main entrypoint for test_plugin.
     """
-    
+
     def __init__(self):
         super().__init__(metadata)
 

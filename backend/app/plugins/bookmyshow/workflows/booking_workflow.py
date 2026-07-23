@@ -19,7 +19,6 @@ from __future__ import annotations
 from app.plugin_framework.workflow.workflow import Workflow
 from app.plugin_framework.workflow.workflow_context import WorkflowContext
 from app.plugin_framework.workflow.workflow_result import WorkflowResult
-
 from app.plugins.bookmyshow.models.booking_request import BookingRequest
 from app.plugins.bookmyshow.steps.choose_date import ChooseDateStep
 from app.plugins.bookmyshow.steps.choose_seats import ChooseSeatsStep

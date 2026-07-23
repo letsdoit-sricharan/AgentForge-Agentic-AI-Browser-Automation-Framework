@@ -1,4 +1,0 @@
-URL: https://www.facebook.com/tr/
-Method: POST
-Content-Type: text/plain
-==================================================

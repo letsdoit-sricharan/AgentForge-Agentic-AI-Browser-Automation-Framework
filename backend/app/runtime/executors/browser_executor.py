@@ -16,8 +16,8 @@ from typing import Any
 
 from app.browser_engine.interfaces.browser import Browser
 from app.browser_engine.interfaces.session import Session
-from app.runtime.execution.execution_context import ExecutionContext
 from app.runtime.exceptions.execution_error import ExecutionError
+from app.runtime.execution.execution_context import ExecutionContext
 
 # Type alias for a browser task
 BrowserTask = Callable[

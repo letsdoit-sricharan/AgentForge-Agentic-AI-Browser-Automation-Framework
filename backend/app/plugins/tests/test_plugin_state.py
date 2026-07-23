@@ -2,7 +2,6 @@
 Tests for PluginState.
 """
 
-import pytest
 from datetime import datetime
 
 from app.plugins.models import PluginState, PluginStatus

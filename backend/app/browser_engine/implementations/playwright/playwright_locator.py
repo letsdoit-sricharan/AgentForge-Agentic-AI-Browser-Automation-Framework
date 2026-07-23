@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from playwright.async_api import (
     Locator as PlaywrightLocatorInstance,
+)
+from playwright.async_api import (
     TimeoutError as PlaywrightTimeoutError,
 )
 
@@ -205,7 +207,7 @@ class PlaywrightLocator(Locator):
             raise LocatorError(
                 "Failed to scroll the element into view."
             ) from exc
-    
+
     def first(self) -> Locator:
         """
         Return the first matching element.

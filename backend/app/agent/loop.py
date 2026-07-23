@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from app.agent.exceptions import GoalFailedError, TerminatedError
 from app.agent.interfaces import (
@@ -9,7 +8,7 @@ from app.agent.interfaces import (
     ObservationCollector,
     Replanner,
     StateEvaluator,
-    TerminationStrategy
+    TerminationStrategy,
 )
 from app.agent.models import AgentSession, EvaluationAction, Observation
 from app.planner.interfaces import Planner
@@ -49,7 +48,7 @@ class DefaultAgent(Agent):
         if not planning_result.is_successful or not planning_result.plan:
             session.status = "FAILED_INITIAL_PLANNING"
             return session
-            
+
         session.goal = planning_result.plan.goal
         session.current_plan = planning_result.plan
         session.status = "EXECUTING"
@@ -82,31 +81,31 @@ class DefaultAgent(Agent):
 
             # Evaluate
             evaluation = await self.state_evaluator.evaluate(session, observation)
-            
+
             if evaluation.action == EvaluationAction.CONTINUE:
                 continue
-                
+
             elif evaluation.action == EvaluationAction.RETRY:
                 # Re-insert the failed task at the front
                 session.current_plan.execution_requests.insert(0, request)
                 continue
-                
+
             elif evaluation.action == EvaluationAction.REPLAN:
                 session.status = "REPLANNING"
                 replanning_result = await self.replanner.replan(session)
                 if not replanning_result.is_successful or not replanning_result.plan:
                     session.status = "FAILED_REPLANNING"
                     raise GoalFailedError(f"Replanning failed: {replanning_result.error_message}")
-                
+
                 session.current_plan = replanning_result.plan
                 session.status = "EXECUTING"
                 continue
-                
+
             elif evaluation.action == EvaluationAction.TERMINATE:
                 session.status = "TERMINATED"
                 raise TerminatedError(f"Evaluator terminated execution: {evaluation.reasoning}")
 
         if self.termination_strategy.should_terminate(session) and session.status == "EXECUTING":
              session.status = "TERMINATED_STRATEGY"
-             
+
         return session

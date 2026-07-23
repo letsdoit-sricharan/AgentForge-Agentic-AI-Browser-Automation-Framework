@@ -3,9 +3,9 @@ Tests for event type definitions.
 """
 
 from app.runtime.events.event_types import (
+    BrowserEventType,
     EventCategory,
     RuntimeEventType,
-    BrowserEventType,
     WorkflowEventType,
 )
 

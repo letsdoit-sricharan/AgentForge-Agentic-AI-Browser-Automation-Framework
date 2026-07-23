@@ -4,8 +4,8 @@ Tests for focus actions.
 
 import asyncio
 
-from app.actions.element.focus import FocusAction
 from app.actions.element.blur import BlurAction
+from app.actions.element.focus import FocusAction
 
 
 class DummyLocator:

@@ -1,5 +1,0 @@
-URL: https://sentry.bookmyshow.com/api/2/envelope/?sentry_version=7&sentry_key=4d17a59c2597410e714ab31d421148d9&sentry_client=sentry.javascript.react%2F9.47.1
-Method: POST
-Content-Type: application/json
-==================================================
-{}

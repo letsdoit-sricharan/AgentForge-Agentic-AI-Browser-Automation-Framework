@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from playwright.async_api import (
     Browser as PlaywrightBrowserInstance,
+)
+from playwright.async_api import (
     Playwright,
     async_playwright,
 )

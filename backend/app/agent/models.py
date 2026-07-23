@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from app.planner.models import Goal, Plan
 
+
 class EvaluationAction(Enum):
     CONTINUE = auto()
     RETRY = auto()

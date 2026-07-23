@@ -1,7 +1,6 @@
-from typing import Optional
+from app.browser_engine.canvas.adapter.canvas_adapter import CanvasAdapter
 from app.browser_engine.interfaces.locator import Locator
 from app.browser_engine.interfaces.page import Page
-from app.browser_engine.canvas.adapter.canvas_adapter import CanvasAdapter
 
 
 class CanvasLocatorBuilder:
@@ -35,7 +34,7 @@ class CanvasLocator(Locator):
     async def _get_node(self):
         adapter = await self._get_adapter()
         query = await adapter.get_nodes()
-        
+
         nth_val = None
         for part in self.node_selector.split("&"):
             part = part.strip()
@@ -51,7 +50,7 @@ class CanvasLocator(Locator):
                     nth_val = int(v)
                 else:
                     query = query.by_attribute(k, v)
-                    
+
         if nth_val is not None:
             from app.browser_engine.canvas.adapter.query import VirtualNodeQuery
             all_nodes = query.all()
@@ -59,7 +58,7 @@ class CanvasLocator(Locator):
                 query = VirtualNodeQuery([all_nodes[nth_val]])
             else:
                 query = VirtualNodeQuery([])
-                
+
         return query
 
     async def click(self, force: bool = False) -> None:
@@ -67,17 +66,17 @@ class CanvasLocator(Locator):
         node = nodes.first()
         if not node:
             raise Exception(f"Canvas node not found for selector {self.node_selector}")
-            
+
         # We need the absolute bounding box of the canvas DOM element itself to offset the virtual coordinates
         canvas_dom = self.page.locator(self.canvas_selector)
         bbox = await canvas_dom.bounding_box()
         if not bbox:
             raise Exception(f"Canvas DOM element '{self.canvas_selector}' has no bounding box.")
-            
+
         # Click center of the virtual node, offset by the actual canvas DOM element position
         abs_x = bbox["x"] + node.x + (node.width / 2)
         abs_y = bbox["y"] + node.y + (node.height / 2)
-        
+
         await self.page.mouse_click(abs_x, abs_y)
 
     async def count(self) -> int:
@@ -109,7 +108,7 @@ class CanvasLocator(Locator):
         nodes = await self._get_node()
         node = nodes.first()
         return node.is_visible if node else False
-        
+
     async def fill(self, value: str) -> None:
         raise NotImplementedError
     async def text(self) -> str:

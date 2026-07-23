@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class NavigationDecision(Enum):
     ABORT = "ABORT"
     RETRY = "RETRY"

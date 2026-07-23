@@ -3,10 +3,10 @@ Tests for the Mouse package public API.
 """
 
 from app.actions.mouse import (
-    MoveMouseAction,
     DragAction,
     DragAndDropAction,
     MouseWheelAction,
+    MoveMouseAction,
 )
 
 
